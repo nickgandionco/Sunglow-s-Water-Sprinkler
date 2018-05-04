@@ -28,11 +28,10 @@
 
 String      SelectOption         = "Select options";
 int         SelectOptionChar     = SelectOption.length();
+char        daysOfTheWeek[7][12] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
 RTC_DS1307  rtc;
 DateTime    RTCCurrentDateTime;
-
-char daysOfTheWeek[7][12] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
 //Set the pins on the I2C chip used for LCD connections (ADDR,EN,R/W,RS,D4,D5,D6,D7)
 LiquidCrystal_I2C lcd(0x3F,2,1,0,4,5,6,7);
@@ -63,7 +62,8 @@ void setup()
   // Set backlight to high initially
   lcd.setBacklight(HIGH);
 
-  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));//auto update from computer time
+  // Auto update from computer time
+  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
 }
 
 //***************************************************************
@@ -85,10 +85,6 @@ void loop()
     // Get date and time
     RTCCurrentDateTime = rtc.now();
 
-    
-    int RTCMin  = RTCCurrentDateTime.minute();
-    int RTCSec  = RTCCurrentDateTime.second();
-    
     //int LcdXOffset = ((LCD_WIDTH - SelectOptionChar)/2);
 
     // Set cursor to (0,0)
@@ -97,7 +93,7 @@ void loop()
     // Print text
     //lcd.print(SelectOption);
 
-    
+    // Print current time
     rtcPrintHour(0,1);
     lcd.print(':');
     rtcPrintMinute(3,1);
