@@ -104,25 +104,10 @@ void setup()
 
 void loop()
 {
-    // Get date and time
-    RTCCurrentDateTime = rtc.now();
+    // Print current date and time
+    lcdPrintDateAndTime();
 
-    // Print current time 
-    rtcPrintHour(0,1);
-    lcd.print(':');
-    rtcPrintMinute(3,1);
-    lcd.print(':');
-    rtcPrintSecond(6, 1);
-
-    lcd.setCursor(0, 0);
-    lcd.print(daysOfTheWeek[RTCCurrentDateTime.dayOfTheWeek()]);
-    lcd.print(" ");
-    lcd.print(RTCCurrentDateTime.day());
-    lcd.print('/');
-    lcd.print(RTCCurrentDateTime.month());
-    lcd.print('/');
-    lcd.print(RTCCurrentDateTime.year());
-
+    // Wait for push button for backlight handling
     mainPBtHandlerForBacklight();
 }
 
@@ -239,6 +224,42 @@ void mainPBtHandlerForBacklight()
         // Reset timer
         TIMERBacklight = 0;
     }
+}
+
+//***************************************************************
+//
+//  Name:       lcdPrintDateAndTime
+//
+//  Function:   Prints date and time in home screen
+//
+//  Inputs:     None
+//
+//  Outputs     None
+//
+//  Changelog:  05/05/2018 - NVG: Created routine
+//
+//***************************************************************
+
+void lcdPrintDateAndTime()
+{
+    // Get date and time
+    RTCCurrentDateTime = rtc.now();
+
+    // Print current time 
+    rtcPrintHour(0,1);
+    lcd.print(':');
+    rtcPrintMinute(3,1);
+    lcd.print(':');
+    rtcPrintSecond(6, 1);
+
+    lcd.setCursor(0, 0);
+    lcd.print(daysOfTheWeek[RTCCurrentDateTime.dayOfTheWeek()]);
+    lcd.print(" ");
+    lcd.print(RTCCurrentDateTime.day());
+    lcd.print('/');
+    lcd.print(RTCCurrentDateTime.month());
+    lcd.print('/');
+    lcd.print(RTCCurrentDateTime.year());
 }
 
 //***************************************************************
