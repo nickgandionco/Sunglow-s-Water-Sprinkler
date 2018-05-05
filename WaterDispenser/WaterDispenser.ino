@@ -50,8 +50,6 @@ typedef enum
 // GLOBAL VARIABLES
 //***********************
 
-String      SelectOption         = "Select options";
-int         SelectOptionChar     = SelectOption.length();
 char        daysOfTheWeek[7][12] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
 RTC_DS1307    rtc;
@@ -108,14 +106,6 @@ void loop()
 {
     // Get date and time
     RTCCurrentDateTime = rtc.now();
-
-    //int LcdXOffset = ((LCD_WIDTH - SelectOptionChar)/2);
-
-    // Set cursor to (0,0)
-    //lcd.setCursor(LcdXOffset, 0);
-
-    // Print text
-    //lcd.print(SelectOption);
 
     // Print current time 
     rtcPrintHour(0,1);
