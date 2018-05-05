@@ -13,18 +13,20 @@
 // DEFINITIONS
 //***********************
 
-#define PIN_MEGA_SDA    20
-#define PIN_MEGA_SCL    21
+#define PIN_MEGA_SDA        20
+#define PIN_MEGA_SCL        21
 
-#define LCD_WIDTH       20
-#define LCD_HEIGHT      4
+#define LCD_WIDTH           20
+#define LCD_HEIGHT          4
 
 #define LCD_BACKLIGHT_PIN  3
 
-#define PB_MODE         2
-#define PB_UP           3
-#define PB_DOWN         18
-#define PB_SELECT       19
+#define PB_MODE             2
+#define PB_UP               3
+#define PB_DOWN             18
+#define PB_SELECT           19
+
+#define BACKLIGHT_TIMEOUT   5000
 
 //***********************
 // ENUMERATIONS
@@ -59,7 +61,7 @@ elapsedMillis TIMERBacklight;
 //Set the pins on the I2C chip used for LCD connections (ADDR,EN,R/W,RS,D4,D5,D6,D7)
 LiquidCrystal_I2C lcd(0x3F,2,1,0,4,5,6,7);
 
-volatile byte MAINPBPress = LOW;
+volatile byte MAINPBPress = PB_RELEASED;
 
 
 //***************************************************************
@@ -226,7 +228,7 @@ void mainInitializeRTC()
 void mainPBtHandlerForBacklight()
 {
     // Check if 5 seconds has elapsed
-    if (5000 < TIMERBacklight)
+    if (BACKLIGHT_TIMEOUT < TIMERBacklight)
     {
         // Turn off LCD backlight
         lcd.setBacklight(LCD_BACKLIGHT_OFF);
