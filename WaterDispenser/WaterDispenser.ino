@@ -36,12 +36,12 @@ char        daysOfTheWeek[7][12] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "S
 
 RTC_DS1307    rtc;
 DateTime      RTCCurrentDateTime;
-elapsedMillis TIMERTomeElapsed;
+elapsedMillis TIMERBacklight;
 
 //Set the pins on the I2C chip used for LCD connections (ADDR,EN,R/W,RS,D4,D5,D6,D7)
 LiquidCrystal_I2C lcd(0x3F,2,1,0,4,5,6,7);
 
-volatile byte state = LOW;
+volatile byte MAINPBPress = LOW;
 
 
 //***************************************************************
@@ -67,7 +67,7 @@ void setup()
     mainInitializePBAndInterrupts();
 
     // Initialize real time clock
-    mainInitializeRTC();    
+    mainInitializeRTC();
 }
 
 //***************************************************************
@@ -113,8 +113,17 @@ void loop()
     lcd.print('/');
     lcd.print(RTCCurrentDateTime.year());
 
-    lcd.setBacklight(state);
-
+    if (5000 < TIMERBacklight)
+    {
+        lcd.setBacklight(LOW);
+        TIMERBacklight = 0;
+    }
+    if (HIGH == MAINPBPress)
+    {
+        MAINPBPress = LOW;
+        lcd.setBacklight(HIGH);
+        TIMERBacklight = 0;
+    }
 }
 
 //***************************************************************
@@ -284,7 +293,6 @@ void rtcPrintSecond(int RTCYCoordinate, int RTCXCoordinate)
 
 void mainModeDepression()
 {
-    state = !state;
-    
+    MAINPBPress = !MAINPBPress;
 }
 
