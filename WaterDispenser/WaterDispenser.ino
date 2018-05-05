@@ -1,5 +1,3 @@
-#include <SoftwareSerial.h>
-
 
 //***********************
 // INCLUDES
@@ -9,7 +7,7 @@
 #include <Wire.h>
 #include "C:\Program Files (x86)\Arduino\libraries\LiquidCrystal_I2C\LCD.h"
 #include <LiquidCrystal_I2C.h>
-
+#include <elapsedMillis.h>
 
 //***********************
 // DEFINITIONS
@@ -36,8 +34,9 @@ String      SelectOption         = "Select options";
 int         SelectOptionChar     = SelectOption.length();
 char        daysOfTheWeek[7][12] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
-RTC_DS1307  rtc;
-DateTime    RTCCurrentDateTime;
+RTC_DS1307    rtc;
+DateTime      RTCCurrentDateTime;
+elapsedMillis TIMERTomeElapsed;
 
 //Set the pins on the I2C chip used for LCD connections (ADDR,EN,R/W,RS,D4,D5,D6,D7)
 LiquidCrystal_I2C lcd(0x3F,2,1,0,4,5,6,7);
