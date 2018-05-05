@@ -1,3 +1,5 @@
+#include <SoftwareSerial.h>
+
 
 //***********************
 // INCLUDES
@@ -21,6 +23,10 @@
 
 #define LCD_BACKLIGHT_PIN  3
 
+#define PB_MODE         2
+#define PB_UP           3
+#define PB_DOWN         18
+#define PB_SELECT       19
 
 //***********************
 // GLOBAL VARIABLES
@@ -36,6 +42,8 @@ DateTime    RTCCurrentDateTime;
 //Set the pins on the I2C chip used for LCD connections (ADDR,EN,R/W,RS,D4,D5,D6,D7)
 LiquidCrystal_I2C lcd(0x3F,2,1,0,4,5,6,7);
 
+volatile byte state = LOW;
+
 
 //***************************************************************
 //
@@ -47,23 +55,20 @@ LiquidCrystal_I2C lcd(0x3F,2,1,0,4,5,6,7);
 //
 //  Outputs     None
 //
-//  Changelog:  04/06/2018 - NVG: Created routine
+//  Changelog:  05/03/2018 - NVG: Created routine
 //
 //***************************************************************
 
 void setup()
 {
-  // Initialize LCD
-  lcd.begin (LCD_WIDTH,LCD_HEIGHT);
+    // Initialize LCD
+    mainInitializeLCD();
 
-  // Initialize LCD BACKLIGHT
-  lcd.setBacklightPin(LCD_BACKLIGHT_PIN,POSITIVE);
+    // Initialize push buttons and interrupt
+    mainInitializePBAndInterrupts();
 
-  // Set backlight to high initially
-  lcd.setBacklight(HIGH);
-
-  // Auto update from computer time
-  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+    // Initialize real time clock
+    mainInitializeRTC();    
 }
 
 //***************************************************************
@@ -93,7 +98,7 @@ void loop()
     // Print text
     //lcd.print(SelectOption);
 
-    // Print current time
+    // Print current time 
     rtcPrintHour(0,1);
     lcd.print(':');
     rtcPrintMinute(3,1);
@@ -108,6 +113,81 @@ void loop()
     lcd.print(RTCCurrentDateTime.month());
     lcd.print('/');
     lcd.print(RTCCurrentDateTime.year());
+
+    lcd.setBacklight(state);
+
+}
+
+//***************************************************************
+//
+//  Name:       mainInitializeLCD
+//
+//  Function:   Initializes LCD
+//
+//  Inputs:     None
+//
+//  Outputs     None
+//
+//  Changelog:  05/05/2018 - NVG: Created routine
+//
+//***************************************************************
+
+void mainInitializeLCD()
+{
+        // Initialize LCD
+    lcd.begin (LCD_WIDTH,LCD_HEIGHT);
+
+    // Initialize LCD backlight
+    lcd.setBacklightPin(LCD_BACKLIGHT_PIN,POSITIVE);
+
+    // Set backlight to high initially
+    lcd.setBacklight(HIGH);
+}
+
+//***************************************************************
+//
+//  Name:       mainInitializePBAndInterrupts
+//
+//  Function:   Initializes push buttons and interrupt
+//
+//  Inputs:     None
+//
+//  Outputs     None
+//
+//  Changelog:  05/05/2018 - NVG: Created routine
+//
+//***************************************************************
+
+void mainInitializePBAndInterrupts()
+{
+    // Initialize push buttons
+    pinMode(PB_MODE, INPUT_PULLUP);
+    pinMode(PB_UP, INPUT_PULLUP);
+    pinMode(PB_DOWN, INPUT_PULLUP);
+    pinMode(PB_SELECT, INPUT_PULLUP);
+
+    // Initialize all interrupt
+    attachInterrupt(digitalPinToInterrupt(PB_MODE), mainModeDepression, FALLING);
+}
+
+//***************************************************************
+//
+//  Name:       mainInitializeRTC
+//
+//  Function:   Initializes and sets real time clock
+//
+//  Inputs:     None
+//
+//  Outputs     None
+//
+//  Changelog:  05/05/2018 - NVG: Created routine
+//
+//***************************************************************
+
+void mainInitializeRTC()
+{
+    // Auto update from computer time
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
 }
 
 //***************************************************************
@@ -121,7 +201,7 @@ void loop()
 //
 //  Outputs     None
 //
-//  Changelog:  04/06/2018 - NVG: Created routine
+//  Changelog:  05/03/2018 - NVG: Created routine
 //
 //***************************************************************
 
@@ -152,7 +232,7 @@ void rtcPrintHour(int RTCYCoordinate, int RTCXCoordinate)
 //
 //  Outputs     None
 //
-//  Changelog:  04/06/2018 - NVG: Created routine
+//  Changelog:  05/03/2018 - NVG: Created routine
 //
 //***************************************************************
 
@@ -183,7 +263,7 @@ void rtcPrintMinute(int RTCYCoordinate, int RTCXCoordinate)
 //
 //  Outputs     None
 //
-//  Changelog:  04/06/2018 - NVG: Created routine
+//  Changelog:  05/03/2018 - NVG: Created routine
 //
 //***************************************************************
 
@@ -202,3 +282,10 @@ void rtcPrintSecond(int RTCYCoordinate, int RTCXCoordinate)
 
     lcd.print(RTCSecond);
 }
+
+void mainModeDepression()
+{
+    state = !state;
+    
+}
+
