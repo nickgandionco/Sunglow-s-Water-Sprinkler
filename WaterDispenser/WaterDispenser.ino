@@ -113,17 +113,7 @@ void loop()
     lcd.print('/');
     lcd.print(RTCCurrentDateTime.year());
 
-    if (5000 < TIMERBacklight)
-    {
-        lcd.setBacklight(LOW);
-        TIMERBacklight = 0;
-    }
-    if (HIGH == MAINPBPress)
-    {
-        MAINPBPress = LOW;
-        lcd.setBacklight(HIGH);
-        TIMERBacklight = 0;
-    }
+
 }
 
 //***************************************************************
@@ -199,6 +189,46 @@ void mainInitializeRTC()
 {
     // Auto update from computer time
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+}
+
+//***************************************************************
+//
+//  Name:       mainPBtHandlerForBacklight
+//
+//  Function:   Push button handler for backlight tasks
+//
+//  Inputs:     None
+//
+//  Outputs     None
+//
+//  Changelog:  05/05/2018 - NVG: Created routine
+//
+//***************************************************************
+
+void mainPBtHandlerForBacklight()
+{
+    // Check if 5 seconds has elapsed
+    if (5000 < TIMERBacklight)
+    {
+        // Turn off LCD backlight
+        lcd.setBacklight(LOW);
+
+        // Reset timer
+        TIMERBacklight = 0;
+    }
+
+    // If there is a push button depression
+    if (HIGH == MAINPBPress)
+    {
+        // Reset push button depression tracker
+        MAINPBPress = LOW;
+
+        // Turn on LCD backlight
+        lcd.setBacklight(HIGH);
+
+        // Reset timer
+        TIMERBacklight = 0;
+    }
 }
 
 //***************************************************************
