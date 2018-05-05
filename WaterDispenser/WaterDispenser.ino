@@ -27,6 +27,24 @@
 #define PB_SELECT       19
 
 //***********************
+// ENUMERATIONS
+//***********************
+
+// Push button states
+typedef enum
+{
+    PB_RELEASED,
+    PB_PRESSED
+} enumButtonStates;
+
+// LCD backlight states
+typedef enum
+{
+   LCD_BACKLIGHT_OFF,
+   LCD_BACKLIGHT_ON
+} enumLCDBacklightStates;
+
+//***********************
 // GLOBAL VARIABLES
 //***********************
 
@@ -63,11 +81,11 @@ void setup()
     // Initialize LCD
     mainInitializeLCD();
 
-    // Initialize push buttons and interrupt
-    mainInitializePBAndInterrupts();
-
     // Initialize real time clock
     mainInitializeRTC();
+
+    // Initialize push buttons and interrupt
+    mainInitializePBAndInterrupts();
 }
 
 //***************************************************************
@@ -113,7 +131,7 @@ void loop()
     lcd.print('/');
     lcd.print(RTCCurrentDateTime.year());
 
-
+    mainPBtHandlerForBacklight();
 }
 
 //***************************************************************
@@ -139,7 +157,7 @@ void mainInitializeLCD()
     lcd.setBacklightPin(LCD_BACKLIGHT_PIN,POSITIVE);
 
     // Set backlight to high initially
-    lcd.setBacklight(HIGH);
+    lcd.setBacklight(LCD_BACKLIGHT_ON);
 }
 
 //***************************************************************
@@ -211,20 +229,20 @@ void mainPBtHandlerForBacklight()
     if (5000 < TIMERBacklight)
     {
         // Turn off LCD backlight
-        lcd.setBacklight(LOW);
+        lcd.setBacklight(LCD_BACKLIGHT_OFF);
 
         // Reset timer
         TIMERBacklight = 0;
     }
 
     // If there is a push button depression
-    if (HIGH == MAINPBPress)
+    if (PB_PRESSED == MAINPBPress)
     {
         // Reset push button depression tracker
-        MAINPBPress = LOW;
+        MAINPBPress = PB_RELEASED;
 
         // Turn on LCD backlight
-        lcd.setBacklight(HIGH);
+        lcd.setBacklight(LCD_BACKLIGHT_ON);
 
         // Reset timer
         TIMERBacklight = 0;
@@ -340,7 +358,7 @@ void rtcPrintSecond(int RTCYCoordinate, int RTCXCoordinate)
 
 void mainModeDepression()
 {
-    MAINPBPress = !MAINPBPress;
+    MAINPBPress = PB_PRESSED;
 }
 
 //***************************************************************
@@ -359,7 +377,7 @@ void mainModeDepression()
 
 void mainUpDepression()
 {
-    MAINPBPress = !MAINPBPress;
+    MAINPBPress = PB_PRESSED;
 }
 
 //***************************************************************
@@ -378,7 +396,7 @@ void mainUpDepression()
 
 void mainDownDepression()
 {
-    MAINPBPress = !MAINPBPress;
+    MAINPBPress = PB_PRESSED;
 }
 
 //***************************************************************
@@ -397,6 +415,6 @@ void mainDownDepression()
 
 void mainSelectDepression()
 {
-    MAINPBPress = !MAINPBPress;
+    MAINPBPress = PB_PRESSED;
 }
 
