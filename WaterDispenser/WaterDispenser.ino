@@ -176,6 +176,9 @@ void mainInitializePBAndInterrupts()
 
     // Initialize all interrupt
     attachInterrupt(digitalPinToInterrupt(PB_MODE), mainModeDepression, FALLING);
+    attachInterrupt(digitalPinToInterrupt(PB_UP), mainUpDepression, FALLING);
+    attachInterrupt(digitalPinToInterrupt(PB_DOWN), mainDownDepression, FALLING);
+    attachInterrupt(digitalPinToInterrupt(PB_SELECT), mainSelectDepression, FALLING);
 }
 
 //***************************************************************
@@ -292,6 +295,21 @@ void rtcPrintSecond(int RTCYCoordinate, int RTCXCoordinate)
 }
 
 void mainModeDepression()
+{
+    MAINPBPress = !MAINPBPress;
+}
+
+void mainUpDepression()
+{
+    MAINPBPress = !MAINPBPress;
+}
+
+void mainDownDepression()
+{
+    MAINPBPress = !MAINPBPress;
+}
+
+void mainSelectDepression()
 {
     MAINPBPress = !MAINPBPress;
 }
