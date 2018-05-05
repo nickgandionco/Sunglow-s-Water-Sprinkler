@@ -294,20 +294,76 @@ void rtcPrintSecond(int RTCYCoordinate, int RTCXCoordinate)
     lcd.print(RTCSecond);
 }
 
+//***************************************************************
+//
+//  Name:       mainModeDepression
+//
+//  Function:   Mode push button depression interrupt handler
+//
+//  Inputs:     None
+//
+//  Outputs     None
+//
+//  Changelog:  05/05/2018 - NVG: Created routine
+//
+//***************************************************************
+
 void mainModeDepression()
 {
     MAINPBPress = !MAINPBPress;
 }
+
+//***************************************************************
+//
+//  Name:       mainUpDepression
+//
+//  Function:   Up push button depression interrupt handler
+//
+//  Inputs:     None
+//
+//  Outputs     None
+//
+//  Changelog:  05/05/2018 - NVG: Created routine
+//
+//***************************************************************
 
 void mainUpDepression()
 {
     MAINPBPress = !MAINPBPress;
 }
 
+//***************************************************************
+//
+//  Name:       mainDownDepression
+//
+//  Function:   Down push button depresison interrupt handler
+//
+//  Inputs:     None
+//
+//  Outputs     None
+//
+//  Changelog:  05/05/2018 - NVG: Created routine
+//
+//***************************************************************
+
 void mainDownDepression()
 {
     MAINPBPress = !MAINPBPress;
 }
+
+//***************************************************************
+//
+//  Name:       mainSelectDepression
+//
+//  Function:   Select push button depression interrupt handler
+//
+//  Inputs:     None
+//
+//  Outputs     None
+//
+//  Changelog:  05/05/2018 - NVG: Created routine
+//
+//***************************************************************
 
 void mainSelectDepression()
 {
