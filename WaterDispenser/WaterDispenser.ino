@@ -21,16 +21,25 @@
 
 #define LCD_BACKLIGHT_PIN  3
 
-#define PB_MODE             2
-#define PB_UP               3
-#define PB_DOWN             18
-#define PB_SELECT           19
+#define PB_MODE_PIN        2
+#define PB_UP_PIN          3
+#define PB_DOWN_PIN        18
+#define PB_SELECT_PIN      19
 
 #define BACKLIGHT_TIMEOUT   5000
 
 //***********************
 // ENUMERATIONS
 //***********************
+
+// Push buttons
+typedef enum
+{
+    PB_MODE,
+    PB_UP,
+    PB_DOWN,
+    PB_SELECT,    
+} etypePushButtons;
 
 // Push button states
 typedef enum
@@ -63,6 +72,14 @@ typedef enum
     SETTINGS_BACKLIGHT,
 };
 
+// Applications
+typedef enum
+{
+    APP_HOMESCREEN,
+    APP_MAIN_MENU,
+    APP_CUSTOM,
+} etypeApplications;
+
 //***********************
 // GLOBAL VARIABLES
 //***********************
@@ -75,22 +92,24 @@ char MENUItems[5][19] =
     "Manual mode",
     "Calibrate meter",
     "Settings",
-}
+};
 
-char SETTINGSItems[][] =
+char SETTINGSItems[2][19] =
 {
     "Buzzer",
     "Backlight",
-}
+};
 
 RTC_DS1307    rtc;
 DateTime      RTCCurrentDateTime;
 elapsedMillis TIMERBacklight;
+uint8_t       MAINForegroundApp;
 
 //Set the pins on the I2C chip used for LCD connections (ADDR,EN,R/W,RS,D4,D5,D6,D7)
 LiquidCrystal_I2C lcd(0x3F,2,1,0,4,5,6,7);
 
-volatile byte MAINPBPress = PB_RELEASED;
+volatile byte       MAINPBPress = PB_RELEASED;
+volatile uint8_t    MAINButtonPressed;
 
 
 //***************************************************************
@@ -117,6 +136,9 @@ void setup()
 
     // Initialize push buttons and interrupt
     mainInitializePBAndInterrupts();
+
+    // Set foreground app to homescreen on bootup
+    MAINForegroundApp = APP_HOMESCREEN;
 }
 
 //***************************************************************
@@ -135,8 +157,11 @@ void setup()
 
 void loop()
 {
-    // Print current date and time
-    lcdPrintDateAndTime();
+    if (APP_HOMESCREEN == MAINForegroundApp)
+    {
+        // Print current date and time
+        lcdPrintDateAndTime();
+    }
 
     // Wait for push button for backlight handling
     mainPBtHandlerForBacklight();
@@ -185,16 +210,16 @@ void mainInitializeLCD()
 void mainInitializePBAndInterrupts()
 {
     // Initialize push buttons
-    pinMode(PB_MODE, INPUT_PULLUP);
-    pinMode(PB_UP, INPUT_PULLUP);
-    pinMode(PB_DOWN, INPUT_PULLUP);
-    pinMode(PB_SELECT, INPUT_PULLUP);
+    pinMode(PB_MODE_PIN, INPUT_PULLUP);
+    pinMode(PB_UP_PIN, INPUT_PULLUP);
+    pinMode(PB_DOWN_PIN, INPUT_PULLUP);
+    pinMode(PB_SELECT_PIN, INPUT_PULLUP);
 
     // Initialize all interrupt
-    attachInterrupt(digitalPinToInterrupt(PB_MODE), mainModeDepression, FALLING);
-    attachInterrupt(digitalPinToInterrupt(PB_UP), mainUpDepression, FALLING);
-    attachInterrupt(digitalPinToInterrupt(PB_DOWN), mainDownDepression, FALLING);
-    attachInterrupt(digitalPinToInterrupt(PB_SELECT), mainSelectDepression, FALLING);
+    attachInterrupt(digitalPinToInterrupt(PB_MODE_PIN), mainModeDepression, FALLING);
+    attachInterrupt(digitalPinToInterrupt(PB_UP_PIN), mainUpDepression, FALLING);
+    attachInterrupt(digitalPinToInterrupt(PB_DOWN_PIN), mainDownDepression, FALLING);
+    attachInterrupt(digitalPinToInterrupt(PB_SELECT_PIN), mainSelectDepression, FALLING);
 }
 
 //***************************************************************
@@ -254,6 +279,8 @@ void mainPBtHandlerForBacklight()
 
         // Reset timer
         TIMERBacklight = 0;
+
+        mainPushButtonHandler();
     }
 }
 
@@ -402,7 +429,11 @@ void rtcPrintSecond(int RTCYCoordinate, int RTCXCoordinate)
 
 void mainModeDepression()
 {
+    // Indicate that there is a button depression
     MAINPBPress = PB_PRESSED;
+
+    // Indicate that MODE button is pressed
+    MAINButtonPressed = PB_MODE;
 }
 
 //***************************************************************
@@ -421,7 +452,11 @@ void mainModeDepression()
 
 void mainUpDepression()
 {
+    // Indicate that there is a button depression
     MAINPBPress = PB_PRESSED;
+
+    // Indicate that UP button is pressed
+    MAINButtonPressed = PB_UP;
 }
 
 //***************************************************************
@@ -440,7 +475,11 @@ void mainUpDepression()
 
 void mainDownDepression()
 {
+    // Indicate that there is a button depression
     MAINPBPress = PB_PRESSED;
+
+    // Indicate that DOWN button is pressed
+    MAINButtonPressed = PB_DOWN;
 }
 
 //***************************************************************
@@ -459,6 +498,62 @@ void mainDownDepression()
 
 void mainSelectDepression()
 {
+    // Indicate that there is a button depression
     MAINPBPress = PB_PRESSED;
+
+    // Indicate that SELECT button is pressed
+    MAINButtonPressed = PB_SELECT;
 }
 
+//***************************************************************
+//
+//  Name:       mainPushButtonHandler
+//
+//  Function:   Handles push button depression events
+//
+//  Inputs:     None
+//
+//  Outputs     None
+//
+//  Changelog:  05/06/2018 - NVG: Created routine
+//
+//***************************************************************
+
+void mainPushButtonHandler()
+{
+    switch (MAINForegroundApp)
+    {
+        case APP_HOMESCREEN:
+        {
+            switch (MAINButtonPressed)
+            {
+                case PB_MODE:
+                {
+                    MAINForegroundApp = APP_MAIN_MENU;
+
+                    lcd.clear();
+                }
+                break;
+            }            
+        }
+        break;
+
+        case APP_MAIN_MENU:
+        {
+            switch (MAINButtonPressed)
+            {
+                case PB_MODE:
+                {
+                    MAINForegroundApp = APP_HOMESCREEN;
+
+                    lcd.clear();
+                }
+                break;
+            }
+        }
+        break;
+    }
+
+    // Reset button depression indicator
+    MAINButtonPressed = 0;
+}
