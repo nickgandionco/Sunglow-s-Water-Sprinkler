@@ -46,11 +46,42 @@ typedef enum
    LCD_BACKLIGHT_ON
 } etypeLCDBacklightStates;
 
+// Main menu items
+typedef enum
+{
+    MENU_SET_SPRINKLE,
+    MENU_SET_TIME,
+    MENU_MANUAL_MODE,
+    MENU_CALIBRATE_METER,
+    MENU_SETTINGS,
+} etypeMainMenuItems;
+
+// Settings items
+typedef enum
+{
+    SETTINGS_BUZZER,
+    SETTINGS_BACKLIGHT,
+};
+
 //***********************
 // GLOBAL VARIABLES
 //***********************
 
-char        daysOfTheWeek[7][12] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+char RTCDaysOfTheWeek[7][12] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+char MENUItems[5][19] =
+{
+    "Set sprinkle",
+    "Set time",
+    "Manual mode",
+    "Calibrate meter",
+    "Settings",
+}
+
+char SETTINGSItems[][] =
+{
+    "Buzzer",
+    "Backlight",
+}
 
 RTC_DS1307    rtc;
 DateTime      RTCCurrentDateTime;
@@ -253,7 +284,7 @@ void lcdPrintDateAndTime()
     rtcPrintSecond(6, 1);
 
     lcd.setCursor(0, 0);
-    lcd.print(daysOfTheWeek[RTCCurrentDateTime.dayOfTheWeek()]);
+    lcd.print(RTCDaysOfTheWeek[RTCCurrentDateTime.dayOfTheWeek()]);
     lcd.print(" ");
     lcd.print(RTCCurrentDateTime.day());
     lcd.print('/');
