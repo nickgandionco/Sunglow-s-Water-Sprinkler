@@ -109,6 +109,7 @@ uint8_t       MAINForegroundApp;
 LiquidCrystal_I2C lcd(0x3F,2,1,0,4,5,6,7);
 
 volatile byte       MAINPBPress = PB_RELEASED;
+volatile byte       MAINBacklightStatus = LCD_BACKLIGHT_ON;
 volatile uint8_t    MAINButtonPressed;
 
 
@@ -132,7 +133,7 @@ void setup()
     mainInitializeLCD();
 
     // Initialize real time clock
-    mainInitializeRTC();
+    rtcInitializeRTC();
 
     // Initialize push buttons and interrupt
     mainInitializePBAndInterrupts();
@@ -224,7 +225,7 @@ void mainInitializePBAndInterrupts()
 
 //***************************************************************
 //
-//  Name:       mainInitializeRTC
+//  Name:       rtcInitializeRTC
 //
 //  Function:   Initializes and sets real time clock
 //
@@ -236,7 +237,7 @@ void mainInitializePBAndInterrupts()
 //
 //***************************************************************
 
-void mainInitializeRTC()
+void rtcInitializeRTC()
 {
     // Auto update from computer time
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
@@ -259,11 +260,11 @@ void mainInitializeRTC()
 void mainPBtHandlerForBacklight()
 {
     // Check if 5 seconds has elapsed
-    if (BACKLIGHT_TIMEOUT < TIMERBacklight)
+    if ((LCD_BACKLIGHT_ON == MAINBacklightStatus) && (BACKLIGHT_TIMEOUT < TIMERBacklight))
     {
-        // Turn off LCD backlight
-        lcd.setBacklight(LCD_BACKLIGHT_OFF);
-
+        // Backlight flag is set to OFF
+        MAINBacklightStatus = LCD_BACKLIGHT_OFF;
+        
         // Reset timer
         TIMERBacklight = 0;
     }
@@ -274,14 +275,17 @@ void mainPBtHandlerForBacklight()
         // Reset push button depression tracker
         MAINPBPress = PB_RELEASED;
 
-        // Turn on LCD backlight
-        lcd.setBacklight(LCD_BACKLIGHT_ON);
+        // Set flag to indicate that backlight should be OFF
+        MAINBacklightStatus = LCD_BACKLIGHT_ON;
 
         // Reset timer
         TIMERBacklight = 0;
 
         mainPushButtonHandler();
     }
+
+    // Turn LCD backlight on/off
+    lcd.setBacklight(MAINBacklightStatus);
 }
 
 //***************************************************************
