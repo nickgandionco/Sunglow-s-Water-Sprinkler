@@ -37,14 +37,14 @@ typedef enum
 {
     PB_RELEASED,
     PB_PRESSED
-} enumButtonStates;
+} etypeButtonStates;
 
 // LCD backlight states
 typedef enum
 {
    LCD_BACKLIGHT_OFF,
    LCD_BACKLIGHT_ON
-} enumLCDBacklightStates;
+} etypeLCDBacklightStates;
 
 //***********************
 // GLOBAL VARIABLES
