@@ -26,7 +26,9 @@
 #define PB_DOWN_PIN        18
 #define PB_SELECT_PIN      19
 
-#define BACKLIGHT_TIMEOUT   5000
+#define BACKLIGHT_TIMEOUT  5000
+
+#define DEBOUNCE_TIME      800 
 
 //***********************
 // ENUMERATIONS
@@ -64,6 +66,15 @@ typedef enum
     MENU_CALIBRATE_METER,
     MENU_SETTINGS,
 } etypeMainMenuItems;
+
+// Main menu item index
+typedef enum
+{
+    MENU_ITEM_1,
+    MENU_ITEM_2,
+    MENU_ITEM_3,
+    MENU_ITEM_4,
+} etypeMainMenuItemIndex;
 
 // Settings items
 typedef enum
@@ -103,6 +114,8 @@ char SETTINGSItems[2][19] =
 RTC_DS1307    rtc;
 DateTime      RTCCurrentDateTime;
 elapsedMillis TIMERBacklight;
+elapsedMillis TIMERDebounce;
+
 uint8_t       MAINForegroundApp;
 
 //Set the pins on the I2C chip used for LCD connections (ADDR,EN,R/W,RS,D4,D5,D6,D7)
@@ -270,7 +283,7 @@ void mainPBtHandlerForBacklight()
     }
 
     // If there is a push button depression
-    if (PB_PRESSED == MAINPBPress)
+    if ((PB_PRESSED == MAINPBPress) && (DEBOUNCE_TIME <= TIMERDebounce))
     {
         // Reset push button depression tracker
         MAINPBPress = PB_RELEASED;
@@ -280,6 +293,9 @@ void mainPBtHandlerForBacklight()
 
         // Reset timer
         TIMERBacklight = 0;
+
+        // Reset debounce timer
+        TIMERDebounce = 0;
 
         mainPushButtonHandler();
     }
@@ -535,7 +551,7 @@ void mainPushButtonHandler()
                 {
                     MAINForegroundApp = APP_MAIN_MENU;
 
-                    lcd.clear();
+                    lcdPrintMainMenu(MENU_SET_SPRINKLE);
                 }
                 break;
             }            
@@ -560,4 +576,65 @@ void mainPushButtonHandler()
 
     // Reset button depression indicator
     MAINButtonPressed = 0;
+}
+
+//***************************************************************
+//
+//  Name:       lcdPrintMainMenu
+//
+//  Function:   Prints main menu
+//
+//  Inputs:     LCDTopMenu - Index of top menu item
+//
+//  Outputs     None
+//
+//  Changelog:  05/07/2018 - NVG: Created routine
+//
+//***************************************************************
+
+void lcdPrintMainMenu(uint8_t LCDTopMenu)
+{
+    uint8_t LCDMenuToDisplay = LCDTopMenu;
+    uint8_t LCDLoopIndex;
+
+    // Clear LCD
+    lcd.clear();
+
+    lcdSelectItemOnMainMenu(MENU_ITEM_1);
+
+    // Print four menu items
+    for (LCDLoopIndex = 0; LCDLoopIndex < 4; LCDLoopIndex++)
+    {
+        // Set cursor postition
+        lcd.setCursor(1, LCDMenuToDisplay);
+
+        // Print menu item
+        lcd.print(MENUItems[LCDMenuToDisplay]);
+        
+        // Increment menu index
+        LCDMenuToDisplay++;
+    }
+}
+
+//***************************************************************
+//
+//  Name:       lcdSelectItemOnMainMenu
+//
+//  Function:   Selects an item in main menu
+//
+//  Inputs:     LCDSelectedItem - Index of selected item
+//
+//  Outputs     None
+//
+//  Changelog:  05/07/2018 - NVG: Created routine
+//
+//***************************************************************
+
+void lcdSelectItemOnMainMenu(uint8_t LCDSelectedItem)
+{
+    // Set cursor postion
+    lcd.setCursor(LCDSelectedItem, 0);
+
+    // Inidicate "highlighted" item
+    lcd.print("*");
 }
