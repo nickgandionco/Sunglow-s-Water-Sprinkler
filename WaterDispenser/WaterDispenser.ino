@@ -28,7 +28,7 @@
 
 #define BACKLIGHT_TIMEOUT  5000
 
-#define DEBOUNCE_TIME      800 
+#define DEBOUNCE_TIME      500 
 
 //***********************
 // ENUMERATIONS
@@ -76,6 +76,13 @@ typedef enum
     MENU_ITEM_4,
 } etypeMainMenuItemIndex;
 
+typedef enum
+{
+    MENU_NONE,
+    MENU_DOWN,
+    MENU_UP
+} etypeMenuSelectionDirection;
+
 // Settings items
 typedef enum
 {
@@ -111,19 +118,20 @@ char SETTINGSItems[2][19] =
     "Backlight",
 };
 
-RTC_DS1307    rtc;
-DateTime      RTCCurrentDateTime;
-elapsedMillis TIMERBacklight;
-elapsedMillis TIMERDebounce;
+RTC_DS1307      rtc;
+DateTime        RTCCurrentDateTime;
+elapsedMillis   TIMERBacklight;
+elapsedMillis   TIMERDebounce;
 
-uint8_t       MAINForegroundApp;
+uint8_t MAINForegroundApp;
+uint8_t MAINMenuIndexSelected       = MENU_ITEM_1;
 
 //Set the pins on the I2C chip used for LCD connections (ADDR,EN,R/W,RS,D4,D5,D6,D7)
 LiquidCrystal_I2C lcd(0x3F,2,1,0,4,5,6,7);
 
-volatile byte       MAINPBPress = PB_RELEASED;
-volatile byte       MAINBacklightStatus = LCD_BACKLIGHT_ON;
-volatile uint8_t    MAINButtonPressed;
+volatile byte MAINPBPress           = PB_RELEASED;
+volatile byte MAINBacklightStatus   = LCD_BACKLIGHT_ON;
+volatile uint8_t MAINButtonPressed;
 
 
 //***************************************************************
@@ -549,9 +557,35 @@ void mainPushButtonHandler()
             {
                 case PB_MODE:
                 {
+                    // Set foreground app to main menu
                     MAINForegroundApp = APP_MAIN_MENU;
 
+                    // Clear LCD
+                    lcd.clear();
+
+                    // Set index to select
+                    lcdSelectItemOnMainMenu(MAINMenuIndexSelected, MENU_NONE);
+
+                    // Print main menu
                     lcdPrintMainMenu(MENU_SET_SPRINKLE);
+                }
+                break;
+
+                case PB_UP:
+                {
+
+                }
+                break;
+
+                case PB_DOWN:
+                {
+
+                }
+                break;
+
+                case PB_SELECT:
+                {
+
                 }
                 break;
             }            
@@ -567,6 +601,38 @@ void mainPushButtonHandler()
                     MAINForegroundApp = APP_HOMESCREEN;
 
                     lcd.clear();
+                }
+                break;
+
+                case PB_UP:
+                {
+                    if (MAINMenuIndexSelected != MENU_ITEM_1)
+                    {
+                        // Increment menu index to hightlight
+                        MAINMenuIndexSelected--;
+
+                        // Set index to select
+                        lcdSelectItemOnMainMenu(MAINMenuIndexSelected, MENU_UP);
+                    }
+                }
+                break;
+
+                case PB_DOWN:
+                {
+                    if (MAINMenuIndexSelected != MENU_ITEM_4)
+                    {
+                        // Increment menu index to hightlight
+                        MAINMenuIndexSelected++;
+
+                        // Set index to select
+                        lcdSelectItemOnMainMenu(MAINMenuIndexSelected, MENU_DOWN);
+                    }
+                }
+                break;
+
+                case PB_SELECT:
+                {
+
                 }
                 break;
             }
@@ -597,11 +663,6 @@ void lcdPrintMainMenu(uint8_t LCDTopMenu)
     uint8_t LCDMenuToDisplay = LCDTopMenu;
     uint8_t LCDLoopIndex;
 
-    // Clear LCD
-    lcd.clear();
-
-    lcdSelectItemOnMainMenu(MENU_ITEM_1);
-
     // Print four menu items
     for (LCDLoopIndex = 0; LCDLoopIndex < 4; LCDLoopIndex++)
     {
@@ -622,7 +683,8 @@ void lcdPrintMainMenu(uint8_t LCDTopMenu)
 //
 //  Function:   Selects an item in main menu
 //
-//  Inputs:     LCDSelectedItem - Index of selected item
+//  Inputs:     LCDSelectedItem  - Index of selected item
+//              LCDMenuDirection - Direction of menu (up/down)
 //
 //  Outputs     None
 //
@@ -630,11 +692,33 @@ void lcdPrintMainMenu(uint8_t LCDTopMenu)
 //
 //***************************************************************
 
-void lcdSelectItemOnMainMenu(uint8_t LCDSelectedItem)
+void lcdSelectItemOnMainMenu(uint8_t LCDSelectedItem, uint8_t LCDMenuDirection)
 {
+    uint8_t LCDCurrentSelection = LCDSelectedItem;
+    uint8_t LCDPreviousSelection;
+
+    if (LCDMenuDirection != MENU_NONE)
+    {
+        // Find out previous selection so we can erase indicator
+        if (LCDMenuDirection == MENU_DOWN)
+        {
+            LCDPreviousSelection = (--LCDSelectedItem);
+        }
+        else if (LCDMenuDirection == MENU_UP)
+        {
+            LCDPreviousSelection = (++LCDSelectedItem);
+        }
+
+        // Set cursor postion
+        lcd.setCursor(0, LCDPreviousSelection);
+
+        // Erase previous selection indicator
+        lcd.print(" ");
+    }
+
     // Set cursor postion
-    lcd.setCursor(LCDSelectedItem, 0);
+    lcd.setCursor(0, LCDCurrentSelection);
 
     // Inidicate "highlighted" item
-    lcd.print("*");
+    lcd.print("*");   
 }
