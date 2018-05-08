@@ -300,7 +300,7 @@ void rtcPrintHour(uint8_t RTCYCoordinate, uint8_t RTCXCoordinate)
        lcdPrintCharArray(RTCYCoordinate, RTCXCoordinate, "0");
     }
 
-    lcdPrintCharArrayInt(RTCYCoordinate, RTCXCoordinate, RTCHour);
+    lcdPrintInt(RTCYCoordinate, RTCXCoordinate, RTCHour);
 }
 
 //***************************************************************
@@ -328,7 +328,7 @@ void rtcPrintMinute(uint8_t RTCYCoordinate, uint8_t RTCXCoordinate)
        lcdPrintCharArray(RTCYCoordinate, RTCXCoordinate, "0");
     }
 
-    lcdPrintCharArrayInt(RTCYCoordinate, RTCXCoordinate, RTCMinute);
+    lcdPrintInt(RTCYCoordinate, RTCXCoordinate, RTCMinute);
 }
 
 //***************************************************************
@@ -356,7 +356,7 @@ void rtcPrintSecond(uint8_t RTCYCoordinate, uint8_t RTCXCoordinate)
        lcdPrintCharArray(RTCYCoordinate, RTCXCoordinate, "0");
     }
 
-    lcdPrintCharArrayInt(RTCYCoordinate, RTCXCoordinate, RTCSecond);
+    lcdPrintInt(RTCYCoordinate, RTCXCoordinate, RTCSecond);
 }
 
 //***************************************************************

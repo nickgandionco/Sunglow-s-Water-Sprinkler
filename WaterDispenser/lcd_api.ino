@@ -88,22 +88,82 @@ void lcdPrintCharArrayDateAndTime()
     lcd.print(RTCCurrentDateTime.year());
 }
 
+//***************************************************************
+//
+//  Name:       lcdPrintCharArray
+//
+//  Function:   Prints character arrays
+//
+//  Inputs:     LCDX            - X coordinate to print
+//              LCDY            - Y coordinate to print
+//              LCDDataToPrint  - Data to print
+//
+//  Outputs     None
+//
+//  Changelog:  05/08/2018 - NVG: Created routine
+//
+//***************************************************************
+
 void lcdPrintCharArray(uint8_t LCDX, uint8_t LCDY, char LCDDataToPrint[])
 {
     lcd.setCursor(LCDX, LCDY);
     lcd.print(LCDDataToPrint);
 }
 
-void lcdPrintCharArrayInt(uint8_t LCDX, uint8_t LCDY, uint8_t LCDDataToPrint)
+//***************************************************************
+//
+//  Name:       lcdPrintInt
+//
+//  Function:   Prints integer
+//
+//  Inputs:     LCDX            - X coordinate to print
+//              LCDY            - Y coordinate to print
+//              LCDDataToPrint  - Data to print
+//
+//  Outputs     None
+//
+//  Changelog:  05/08/2018 - NVG: Created routine
+//
+//***************************************************************
+
+void lcdPrintInt(uint8_t LCDX, uint8_t LCDY, uint8_t LCDDataToPrint)
 {
     lcd.setCursor(LCDX, LCDY);
     lcd.print(LCDDataToPrint);
 }
 
+//***************************************************************
+//
+//  Name:       lcdClearLCD
+//
+//  Function:   Clears entire LCD
+//
+//  Inputs:     None
+//
+//  Outputs     None
+//
+//  Changelog:  05/08/2018 - NVG: Created routine
+//
+//***************************************************************
+
 void lcdClearLCD()
 {
     lcd.clear();
 }
+
+//***************************************************************
+//
+//  Name:       lcdSetBacklight
+//
+//  Function:   Turn backlight on or off
+//
+//  Inputs:     LCDBacklightStatus - Status of backlight (ON/OFF)
+//
+//  Outputs     None
+//
+//  Changelog:  05/08/2018 - NVG: Created routine
+//
+//***************************************************************
 
 void lcdSetBacklight(uint8_t LCDBacklightStatus)
 {
