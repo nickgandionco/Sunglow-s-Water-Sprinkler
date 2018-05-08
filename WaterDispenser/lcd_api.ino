@@ -13,7 +13,7 @@
 #define LCD_WIDTH           20
 #define LCD_HEIGHT          4
 
-#define LCD_BACKLIGHT_PIN  3
+#define LCD_BACKLIGHT_PIN   3
 
 //***********************
 // GLOBAL VARIABLES
@@ -21,10 +21,6 @@
 
 //Set the pins on the I2C chip used for LCD connections (ADDR,EN,R/W,RS,D4,D5,D6,D7)
 LiquidCrystal_I2C lcd(0x3F,2,1,0,4,5,6,7);
-
-//***********************
-// ENUMERATIONS
-//***********************
 
 //***************************************************************
 //
@@ -42,7 +38,7 @@ LiquidCrystal_I2C lcd(0x3F,2,1,0,4,5,6,7);
 
 void lcdInit()
 {
-        // Initialize LCD
+    // Initialize LCD
     lcd.begin (LCD_WIDTH,LCD_HEIGHT);
 
     // Initialize LCD backlight
@@ -50,42 +46,6 @@ void lcdInit()
 
     // Set backlight to high initially
     lcd.setBacklight(1);
-}
-
-//***************************************************************
-//
-//  Name:       lcdPrintCharArrayDateAndTime
-//
-//  Function:   Prints date and time in home screen
-//
-//  Inputs:     None
-//
-//  Outputs     None
-//
-//  Changelog:  05/05/2018 - NVG: Created routine
-//
-//***************************************************************
-
-void lcdPrintCharArrayDateAndTime()
-{
-    // Get date and time
-    RTCCurrentDateTime = rtc.now();
-
-    // Print current time 
-    rtcPrintHour(0,1);
-    lcd.print(':');
-    rtcPrintMinute(3,1);
-    lcd.print(':');
-    rtcPrintSecond(6, 1);
-
-    lcd.setCursor(0, 0);
-    lcd.print(RTCDaysOfTheWeek[RTCCurrentDateTime.dayOfTheWeek()]);
-    lcd.print(" ");
-    lcd.print(RTCCurrentDateTime.day());
-    lcd.print('/');
-    lcd.print(RTCCurrentDateTime.month());
-    lcd.print('/');
-    lcd.print(RTCCurrentDateTime.year());
 }
 
 //***************************************************************

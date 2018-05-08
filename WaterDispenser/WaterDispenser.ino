@@ -3,7 +3,6 @@
 // INCLUDES
 //***********************
 
-#include <RTClib.h>
 #include <elapsedMillis.h>
 
 //***********************
@@ -94,7 +93,6 @@ typedef enum
 // GLOBAL VARIABLES
 //***********************
 
-char RTCDaysOfTheWeek[7][12] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 char MENUItems[5][19] =
 {
     "Set sprinkle",
@@ -110,8 +108,6 @@ char SETTINGSItems[2][19] =
     "Backlight",
 };
 
-RTC_DS1307      rtc;
-DateTime        RTCCurrentDateTime;
 elapsedMillis   TIMERBacklight;
 elapsedMillis   TIMERDebounce;
 
@@ -143,7 +139,7 @@ void setup()
     lcdInit();
 
     // Initialize real time clock
-    rtcInitializeRTC();
+    rtcInit();
 
     // Initialize push buttons and interrupt
     mainInitializePBAndInterrupts();
@@ -171,7 +167,7 @@ void loop()
     if (APP_HOMESCREEN == MAINForegroundApp)
     {
         // Print current date and time
-        lcdPrintCharArrayDateAndTime();
+        rtcPrintDateAndTime();
     }
 
     // Wait for push button for backlight handling
@@ -205,26 +201,6 @@ void mainInitializePBAndInterrupts()
     attachInterrupt(digitalPinToInterrupt(PB_UP_PIN), mainUpDepression, FALLING);
     attachInterrupt(digitalPinToInterrupt(PB_DOWN_PIN), mainDownDepression, FALLING);
     attachInterrupt(digitalPinToInterrupt(PB_SELECT_PIN), mainSelectDepression, FALLING);
-}
-
-//***************************************************************
-//
-//  Name:       rtcInitializeRTC
-//
-//  Function:   Initializes and sets real time clock
-//
-//  Inputs:     None
-//
-//  Outputs     None
-//
-//  Changelog:  05/05/2018 - NVG: Created routine
-//
-//***************************************************************
-
-void rtcInitializeRTC()
-{
-    // Auto update from computer time
-    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
 }
 
 //***************************************************************
@@ -273,90 +249,6 @@ void mainPBtHandlerForBacklight()
 
     // Turn LCD backlight on/off
     lcdSetBacklight(MAINBacklightStatus);
-}
-
-//***************************************************************
-//
-//  Name:       rtcPrintHour
-//
-//  Function:   Prints hour on the LCD
-//
-//  Inputs:     RTCYCoordinate - Y coordinate to print
-//              RTCXCoordinate - X coordinate to print
-//
-//  Outputs     None
-//
-//  Changelog:  05/03/2018 - NVG: Created routine
-//
-//***************************************************************
-
-void rtcPrintHour(uint8_t RTCYCoordinate, uint8_t RTCXCoordinate)
-{
-    uint8_t RTCHour = RTCCurrentDateTime.hour();
-
-    // Manually add zero if single digits
-    if (RTCHour < 10)
-    {
-       lcdPrintCharArray(RTCYCoordinate, RTCXCoordinate, "0");
-    }
-
-    lcdPrintInt(RTCYCoordinate, RTCXCoordinate, RTCHour);
-}
-
-//***************************************************************
-//
-//  Name:       rtcPrintMinute
-//
-//  Function:   Prints minute on the LCD
-//
-//  Inputs:     RTCYCoordinate - Y coordinate to print
-//              RTCXCoordinate - X coordinate to print
-//
-//  Outputs     None
-//
-//  Changelog:  05/03/2018 - NVG: Created routine
-//
-//***************************************************************
-
-void rtcPrintMinute(uint8_t RTCYCoordinate, uint8_t RTCXCoordinate)
-{
-    uint8_t RTCMinute = RTCCurrentDateTime.minute();
-   
-    // Manually add zero if single digits
-    if (RTCMinute < 10)
-    {
-       lcdPrintCharArray(RTCYCoordinate, RTCXCoordinate, "0");
-    }
-
-    lcdPrintInt(RTCYCoordinate, RTCXCoordinate, RTCMinute);
-}
-
-//***************************************************************
-//
-//  Name:       rtcPrintSecond
-//
-//  Function:   Prints second on the LCD
-//
-//  Inputs:     RTCYCoordinate - Y coordinate to print
-//              RTCXCoordinate - X coordinate to print
-//
-//  Outputs     None
-//
-//  Changelog:  05/03/2018 - NVG: Created routine
-//
-//***************************************************************
-
-void rtcPrintSecond(uint8_t RTCYCoordinate, uint8_t RTCXCoordinate)
-{
-    uint8_t RTCSecond = RTCCurrentDateTime.second();
-
-    // Manually add zero if single digits
-    if (RTCSecond < 10)
-    {
-       lcdPrintCharArray(RTCYCoordinate, RTCXCoordinate, "0");
-    }
-
-    lcdPrintInt(RTCYCoordinate, RTCXCoordinate, RTCSecond);
 }
 
 //***************************************************************
@@ -516,7 +408,11 @@ void mainPushButtonHandler()
             {
                 case PB_MODE:
                 {
+                    // Make homescreen foreground application
                     MAINForegroundApp = APP_HOMESCREEN;
+
+                    // Set first item to be highlighted
+                    MAINMenuIndexSelected = MENU_ITEM_1;
 
                     lcdClearLCD();
                 }
