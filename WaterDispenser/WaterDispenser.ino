@@ -4,9 +4,6 @@
 //***********************
 
 #include <RTClib.h>
-#include <Wire.h>
-#include "C:\Program Files (x86)\Arduino\libraries\LiquidCrystal_I2C\LCD.h"
-#include <LiquidCrystal_I2C.h>
 #include <elapsedMillis.h>
 
 //***********************
@@ -15,11 +12,6 @@
 
 #define PIN_MEGA_SDA        20
 #define PIN_MEGA_SCL        21
-
-#define LCD_WIDTH           20
-#define LCD_HEIGHT          4
-
-#define LCD_BACKLIGHT_PIN  3
 
 #define PB_MODE_PIN        2
 #define PB_UP_PIN          3
@@ -49,13 +41,6 @@ typedef enum
     PB_RELEASED,
     PB_PRESSED
 } etypeButtonStates;
-
-// LCD backlight states
-typedef enum
-{
-   LCD_BACKLIGHT_OFF,
-   LCD_BACKLIGHT_ON
-} etypeLCDBacklightStates;
 
 // Main menu items
 typedef enum
@@ -98,6 +83,13 @@ typedef enum
     APP_CUSTOM,
 } etypeApplications;
 
+// LCD backlight states
+typedef enum
+{
+   LCD_BACKLIGHT_OFF,
+   LCD_BACKLIGHT_ON
+} etypeLCDBacklightStates;
+
 //***********************
 // GLOBAL VARIABLES
 //***********************
@@ -126,9 +118,6 @@ elapsedMillis   TIMERDebounce;
 uint8_t MAINForegroundApp;
 uint8_t MAINMenuIndexSelected       = MENU_ITEM_1;
 
-//Set the pins on the I2C chip used for LCD connections (ADDR,EN,R/W,RS,D4,D5,D6,D7)
-LiquidCrystal_I2C lcd(0x3F,2,1,0,4,5,6,7);
-
 volatile byte MAINPBPress           = PB_RELEASED;
 volatile byte MAINBacklightStatus   = LCD_BACKLIGHT_ON;
 volatile uint8_t MAINButtonPressed;
@@ -151,7 +140,7 @@ volatile uint8_t MAINButtonPressed;
 void setup()
 {
     // Initialize LCD
-    mainInitializeLCD();
+    lcdInit();
 
     // Initialize real time clock
     rtcInitializeRTC();
@@ -182,37 +171,11 @@ void loop()
     if (APP_HOMESCREEN == MAINForegroundApp)
     {
         // Print current date and time
-        lcdPrintDateAndTime();
+        lcdPrintCharArrayDateAndTime();
     }
 
     // Wait for push button for backlight handling
     mainPBtHandlerForBacklight();
-}
-
-//***************************************************************
-//
-//  Name:       mainInitializeLCD
-//
-//  Function:   Initializes LCD
-//
-//  Inputs:     None
-//
-//  Outputs     None
-//
-//  Changelog:  05/05/2018 - NVG: Created routine
-//
-//***************************************************************
-
-void mainInitializeLCD()
-{
-        // Initialize LCD
-    lcd.begin (LCD_WIDTH,LCD_HEIGHT);
-
-    // Initialize LCD backlight
-    lcd.setBacklightPin(LCD_BACKLIGHT_PIN,POSITIVE);
-
-    // Set backlight to high initially
-    lcd.setBacklight(LCD_BACKLIGHT_ON);
 }
 
 //***************************************************************
@@ -309,43 +272,7 @@ void mainPBtHandlerForBacklight()
     }
 
     // Turn LCD backlight on/off
-    lcd.setBacklight(MAINBacklightStatus);
-}
-
-//***************************************************************
-//
-//  Name:       lcdPrintDateAndTime
-//
-//  Function:   Prints date and time in home screen
-//
-//  Inputs:     None
-//
-//  Outputs     None
-//
-//  Changelog:  05/05/2018 - NVG: Created routine
-//
-//***************************************************************
-
-void lcdPrintDateAndTime()
-{
-    // Get date and time
-    RTCCurrentDateTime = rtc.now();
-
-    // Print current time 
-    rtcPrintHour(0,1);
-    lcd.print(':');
-    rtcPrintMinute(3,1);
-    lcd.print(':');
-    rtcPrintSecond(6, 1);
-
-    lcd.setCursor(0, 0);
-    lcd.print(RTCDaysOfTheWeek[RTCCurrentDateTime.dayOfTheWeek()]);
-    lcd.print(" ");
-    lcd.print(RTCCurrentDateTime.day());
-    lcd.print('/');
-    lcd.print(RTCCurrentDateTime.month());
-    lcd.print('/');
-    lcd.print(RTCCurrentDateTime.year());
+    lcdSetBacklight(MAINBacklightStatus);
 }
 
 //***************************************************************
@@ -363,20 +290,17 @@ void lcdPrintDateAndTime()
 //
 //***************************************************************
 
-void rtcPrintHour(int RTCYCoordinate, int RTCXCoordinate)
+void rtcPrintHour(uint8_t RTCYCoordinate, uint8_t RTCXCoordinate)
 {
-    int RTCHour = RTCCurrentDateTime.hour();
+    uint8_t RTCHour = RTCCurrentDateTime.hour();
 
-    // Set lcd cursor
-    lcd.setCursor(RTCYCoordinate, RTCXCoordinate);
-    
     // Manually add zero if single digits
     if (RTCHour < 10)
     {
-        lcd.print("0");
+       lcdPrintCharArray(RTCYCoordinate, RTCXCoordinate, "0");
     }
 
-    lcd.print(RTCHour);
+    lcdPrintCharArrayInt(RTCYCoordinate, RTCXCoordinate, RTCHour);
 }
 
 //***************************************************************
@@ -394,20 +318,17 @@ void rtcPrintHour(int RTCYCoordinate, int RTCXCoordinate)
 //
 //***************************************************************
 
-void rtcPrintMinute(int RTCYCoordinate, int RTCXCoordinate)
+void rtcPrintMinute(uint8_t RTCYCoordinate, uint8_t RTCXCoordinate)
 {
-    int RTCMinute = RTCCurrentDateTime.minute();
-
-    // Set lcd cursor
-    lcd.setCursor(RTCYCoordinate, RTCXCoordinate);
-    
+    uint8_t RTCMinute = RTCCurrentDateTime.minute();
+   
     // Manually add zero if single digits
     if (RTCMinute < 10)
     {
-        lcd.print("0");
+       lcdPrintCharArray(RTCYCoordinate, RTCXCoordinate, "0");
     }
 
-    lcd.print(RTCMinute);
+    lcdPrintCharArrayInt(RTCYCoordinate, RTCXCoordinate, RTCMinute);
 }
 
 //***************************************************************
@@ -425,20 +346,17 @@ void rtcPrintMinute(int RTCYCoordinate, int RTCXCoordinate)
 //
 //***************************************************************
 
-void rtcPrintSecond(int RTCYCoordinate, int RTCXCoordinate)
+void rtcPrintSecond(uint8_t RTCYCoordinate, uint8_t RTCXCoordinate)
 {
-    int RTCSecond = RTCCurrentDateTime.second();
+    uint8_t RTCSecond = RTCCurrentDateTime.second();
 
-    // Set lcd cursor
-    lcd.setCursor(RTCYCoordinate, RTCXCoordinate);
-    
     // Manually add zero if single digits
     if (RTCSecond < 10)
     {
-        lcd.print("0");
+       lcdPrintCharArray(RTCYCoordinate, RTCXCoordinate, "0");
     }
 
-    lcd.print(RTCSecond);
+    lcdPrintCharArrayInt(RTCYCoordinate, RTCXCoordinate, RTCSecond);
 }
 
 //***************************************************************
@@ -561,13 +479,13 @@ void mainPushButtonHandler()
                     MAINForegroundApp = APP_MAIN_MENU;
 
                     // Clear LCD
-                    lcd.clear();
+                    lcdClearLCD();
 
                     // Set index to select
                     lcdSelectItemOnMainMenu(MAINMenuIndexSelected, MENU_NONE);
 
                     // Print main menu
-                    lcdPrintMainMenu(MENU_SET_SPRINKLE);
+                    lcdPrintCharArrayMainMenu(MENU_SET_SPRINKLE);
                 }
                 break;
 
@@ -600,7 +518,7 @@ void mainPushButtonHandler()
                 {
                     MAINForegroundApp = APP_HOMESCREEN;
 
-                    lcd.clear();
+                    lcdClearLCD();
                 }
                 break;
 
@@ -646,7 +564,7 @@ void mainPushButtonHandler()
 
 //***************************************************************
 //
-//  Name:       lcdPrintMainMenu
+//  Name:       lcdPrintCharArrayMainMenu
 //
 //  Function:   Prints main menu
 //
@@ -658,7 +576,7 @@ void mainPushButtonHandler()
 //
 //***************************************************************
 
-void lcdPrintMainMenu(uint8_t LCDTopMenu)
+void lcdPrintCharArrayMainMenu(uint8_t LCDTopMenu)
 {
     uint8_t LCDMenuToDisplay = LCDTopMenu;
     uint8_t LCDLoopIndex;
@@ -666,11 +584,7 @@ void lcdPrintMainMenu(uint8_t LCDTopMenu)
     // Print four menu items
     for (LCDLoopIndex = 0; LCDLoopIndex < 4; LCDLoopIndex++)
     {
-        // Set cursor postition
-        lcd.setCursor(1, LCDMenuToDisplay);
-
-        // Print menu item
-        lcd.print(MENUItems[LCDMenuToDisplay]);
+        lcdPrintCharArray(1, LCDMenuToDisplay, MENUItems[LCDMenuToDisplay]);
         
         // Increment menu index
         LCDMenuToDisplay++;
@@ -709,16 +623,8 @@ void lcdSelectItemOnMainMenu(uint8_t LCDSelectedItem, uint8_t LCDMenuDirection)
             LCDPreviousSelection = (++LCDSelectedItem);
         }
 
-        // Set cursor postion
-        lcd.setCursor(0, LCDPreviousSelection);
-
-        // Erase previous selection indicator
-        lcd.print(" ");
+        lcdPrintCharArray(0, LCDPreviousSelection, " ");
     }
 
-    // Set cursor postion
-    lcd.setCursor(0, LCDCurrentSelection);
-
-    // Inidicate "highlighted" item
-    lcd.print("*");   
+    lcdPrintCharArray(0, LCDCurrentSelection, "*");
 }
