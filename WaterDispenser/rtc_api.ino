@@ -109,8 +109,10 @@ void rtcPrintDateTimeData(uint8_t RTCParam, uint8_t RTCYCoordinate, uint8_t RTCX
 
         case RTC_YEAR:
         {
+            // Get 16bit year data
             uint16_t RTCYearData = RTCCurrentDateTime.year();
 
+            // Get year data after year 2000
             RTCData = RTCYearData - 2000;
         }
         break;

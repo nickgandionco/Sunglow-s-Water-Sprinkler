@@ -93,15 +93,6 @@ typedef enum
 // GLOBAL VARIABLES
 //***********************
 
-char MENUItems[5][19] =
-{
-    "Set sprinkle",
-    "Set time",
-    "Manual mode",
-    "Calibrate meter",
-    "Settings",
-};
-
 char SETTINGSItems[2][19] =
 {
     "Buzzer",
@@ -363,93 +354,13 @@ void mainPushButtonHandler()
     {
         case APP_HOMESCREEN:
         {
-            switch (MAINButtonPressed)
-            {
-                case PB_MODE:
-                {
-                    // Set foreground app to main menu
-                    MAINForegroundApp = APP_MAIN_MENU;
-
-                    // Clear LCD
-                    lcdClearLCD();
-
-                    // Set index to select
-                    lcdSelectItemOnMainMenu(MAINMenuIndexSelected, MENU_NONE);
-
-                    // Print main menu
-                    lcdPrintCharArrayMainMenu(MENU_SET_SPRINKLE);
-                }
-                break;
-
-                case PB_UP:
-                {
-
-                }
-                break;
-
-                case PB_DOWN:
-                {
-
-                }
-                break;
-
-                case PB_SELECT:
-                {
-
-                }
-                break;
-            }            
+            homescreenPushButtonHandler(MAINButtonPressed);
         }
         break;
 
         case APP_MAIN_MENU:
         {
-            switch (MAINButtonPressed)
-            {
-                case PB_MODE:
-                {
-                    // Make homescreen foreground application
-                    MAINForegroundApp = APP_HOMESCREEN;
-
-                    // Set first item to be highlighted
-                    MAINMenuIndexSelected = MENU_ITEM_1;
-
-                    lcdClearLCD();
-                }
-                break;
-
-                case PB_UP:
-                {
-                    if (MAINMenuIndexSelected != MENU_ITEM_1)
-                    {
-                        // Increment menu index to hightlight
-                        MAINMenuIndexSelected--;
-
-                        // Set index to select
-                        lcdSelectItemOnMainMenu(MAINMenuIndexSelected, MENU_UP);
-                    }
-                }
-                break;
-
-                case PB_DOWN:
-                {
-                    if (MAINMenuIndexSelected != MENU_ITEM_4)
-                    {
-                        // Increment menu index to hightlight
-                        MAINMenuIndexSelected++;
-
-                        // Set index to select
-                        lcdSelectItemOnMainMenu(MAINMenuIndexSelected, MENU_DOWN);
-                    }
-                }
-                break;
-
-                case PB_SELECT:
-                {
-
-                }
-                break;
-            }
+            mainmenuPushButtonHandler(MAINButtonPressed);
         }
         break;
     }
@@ -460,41 +371,11 @@ void mainPushButtonHandler()
 
 //***************************************************************
 //
-//  Name:       lcdPrintCharArrayMainMenu
+//  Name:       mainSetForegroundApp
 //
-//  Function:   Prints main menu
+//  Function:   Sets foreground application
 //
-//  Inputs:     LCDTopMenu - Index of top menu item
-//
-//  Outputs     None
-//
-//  Changelog:  05/07/2018 - NVG: Created routine
-//
-//***************************************************************
-
-void lcdPrintCharArrayMainMenu(uint8_t LCDTopMenu)
-{
-    uint8_t LCDMenuToDisplay = LCDTopMenu;
-    uint8_t LCDLoopIndex;
-
-    // Print four menu items
-    for (LCDLoopIndex = 0; LCDLoopIndex < 4; LCDLoopIndex++)
-    {
-        lcdPrintCharArray(1, LCDMenuToDisplay, MENUItems[LCDMenuToDisplay]);
-        
-        // Increment menu index
-        LCDMenuToDisplay++;
-    }
-}
-
-//***************************************************************
-//
-//  Name:       lcdSelectItemOnMainMenu
-//
-//  Function:   Selects an item in main menu
-//
-//  Inputs:     LCDSelectedItem  - Index of selected item
-//              LCDMenuDirection - Direction of menu (up/down)
+//  Inputs:     MAINForeground  - Foreground application
 //
 //  Outputs     None
 //
@@ -502,25 +383,7 @@ void lcdPrintCharArrayMainMenu(uint8_t LCDTopMenu)
 //
 //***************************************************************
 
-void lcdSelectItemOnMainMenu(uint8_t LCDSelectedItem, uint8_t LCDMenuDirection)
+void mainSetForegroundApp(etypeApplications MAINForeground)
 {
-    uint8_t LCDCurrentSelection = LCDSelectedItem;
-    uint8_t LCDPreviousSelection;
-
-    if (LCDMenuDirection != MENU_NONE)
-    {
-        // Find out previous selection so we can erase indicator
-        if (LCDMenuDirection == MENU_DOWN)
-        {
-            LCDPreviousSelection = (--LCDSelectedItem);
-        }
-        else if (LCDMenuDirection == MENU_UP)
-        {
-            LCDPreviousSelection = (++LCDSelectedItem);
-        }
-
-        lcdPrintCharArray(0, LCDPreviousSelection, " ");
-    }
-
-    lcdPrintCharArray(0, LCDCurrentSelection, "*");
+    MAINForegroundApp = MAINForeground;
 }
