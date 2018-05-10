@@ -28,6 +28,10 @@ char SPRIdentifiers[4][2] =
     "3."
 };
 
+char SPRHour[2];
+char SPRMinute[2];
+char SPRDuration[2];
+
 //***************************************************************
 //
 //  Name:       sprInit
@@ -58,7 +62,7 @@ void sprInit()
     {
         .IsActive           = SPRINKLER_ON,
         .Hour               = 12,
-        .Minute             = 00,
+        .Minute             = 5,
         .SprinkleDuration   = 10,
     };
 
@@ -105,42 +109,65 @@ void sprPrintMenu()
         // Print on/off status
         lcdPrintCharArray(3, SPRLoopIndex, SPROnOff[SPRSettingToDisplay.IsActive]);
 
-        // Print hour with no zero supression
-        if (SPRSettingToDisplay.Hour < 10)
-        {
-            lcdPrintInt(7, SPRLoopIndex, 0);
-            lcdPrintInt(8, SPRLoopIndex, SPRSettingToDisplay.Hour);
-        }
-        else
-        {
-            lcdPrintInt(7, SPRLoopIndex, SPRSettingToDisplay.Hour);
-        }
+        // Print hour with no zero suppression
+        sprintf(SPRHour, "%02d", SPRSettingToDisplay.Hour);
+        lcdPrintCharArray(7, SPRLoopIndex, SPRHour);
 
         lcdPrintCharArray(9, SPRLoopIndex, ":");
 
         // Print minute with no zero supression
-        if (SPRSettingToDisplay.Minute < 10)
-        {
-            lcdPrintInt(10, SPRLoopIndex, 0);
-            lcdPrintInt(11, SPRLoopIndex, SPRSettingToDisplay.Minute);
-        }
-        else
-        {
-            lcdPrintInt(10, SPRLoopIndex, SPRSettingToDisplay.Minute);
-        }
+        sprintf(SPRMinute, "%02d", SPRSettingToDisplay.Minute);
+        lcdPrintCharArray(10, SPRLoopIndex, SPRMinute);
 
         // Print duration with no zero supression
-        if (SPRSettingToDisplay.SprinkleDuration < 10)
-        {
-            lcdPrintInt(13, SPRLoopIndex, 0);
-            lcdPrintInt(14, SPRLoopIndex, SPRSettingToDisplay.SprinkleDuration);
-        }
-        else
-        {
-            lcdPrintInt(13, SPRLoopIndex, SPRSettingToDisplay.SprinkleDuration);
-        }
+        sprintf(SPRDuration, "%02d", SPRSettingToDisplay.SprinkleDuration);
+        lcdPrintCharArray(13, SPRLoopIndex, SPRDuration);
 
         lcdPrintCharArray(15, SPRLoopIndex, "Mins");
 
+    }
+}
+
+//***************************************************************
+//
+//  Name:       sprMenuBHandler
+//
+//  Function:   Push button handler for sprinkle menu
+//
+//  Inputs:     SPRPBPressed - Push button pressed
+//
+//  Outputs     None
+//
+//  Changelog:  05/10/2018 - NVG: Created routine
+//
+//***************************************************************
+
+void sprMenuBHandler(uint8_t SPRPBPressed)
+{
+    switch (SPRPBPressed)
+    {
+        case PB_MODE:
+        {
+
+        }
+        break;
+
+        case PB_UP:
+        {
+
+        }
+        break;
+
+        case PB_DOWN:
+        {
+
+        }
+        break;
+
+        case PB_BACK:
+        {
+
+        }
+        break;
     }
 }
