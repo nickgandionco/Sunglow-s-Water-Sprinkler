@@ -25,14 +25,14 @@
 // STRUCTURES
 //***********************
 
-// Sprinkle time
+// Sprinkle time parameters
 typedef struct
 {
     bool IsActive;
     uint8_t Hour;
     uint8_t Minute;
     uint8_t SprinkleDuration;  
-};
+} stypeSprinkleTimeParamters;
 
 //***********************
 // ENUMERATIONS
@@ -102,6 +102,13 @@ typedef enum
    LCD_BACKLIGHT_ON
 } etypeLCDBacklightStates;
 
+// Sprinkler states
+typedef enum
+{
+   SPRINKLER_OFF,
+   SPRINKLER_ON
+} etypeSPRSprinklerStates;
+
 //***********************
 // GLOBAL VARIABLES
 //***********************
@@ -117,6 +124,10 @@ elapsedMillis   TIMERDebounce;
 
 uint8_t MAINForegroundApp;
 uint8_t MAINMenuIndexSelected       = MENU_ITEM_1;
+
+stypeSprinkleTimeParamters SprinkleSetting1;
+stypeSprinkleTimeParamters SprinkleSetting2;
+stypeSprinkleTimeParamters SprinkleSetting3;
 
 volatile byte MAINPBPress           = PB_RELEASED;
 volatile byte MAINBacklightStatus   = LCD_BACKLIGHT_ON;
@@ -150,6 +161,9 @@ void setup()
 
     // Set foreground app to homescreen on bootup
     MAINForegroundApp = APP_HOMESCREEN;
+
+    // Initialize sprinkler settings
+    sprinkleInit();
 }
 
 //***************************************************************
