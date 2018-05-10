@@ -22,6 +22,19 @@
 #define DEBOUNCE_TIME      500 
 
 //***********************
+// STRUCTURES
+//***********************
+
+// Sprinkle time
+typedef struct
+{
+    bool IsActive;
+    uint8_t Hour;
+    uint8_t Minute;
+    uint8_t SprinkleDuration;  
+};
+
+//***********************
 // ENUMERATIONS
 //***********************
 
