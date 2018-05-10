@@ -32,13 +32,11 @@ void mainmenuPushButtonHandler(uint8_t MAINPBPressed)
     {
         case PB_MODE:
         {
-            // Make homescreen foreground application
-            mainSetForegroundApp(APP_HOMESCREEN);
-
-            // Set first item to be highlighted
-            MAINMenuIndexSelected = MENU_ITEM_1;
-
             lcdClearLCD();
+            
+            mainSetForegroundApp(APP_SPRINKLE);
+
+            sprPrintMenu();
         }
         break;
 
@@ -68,9 +66,13 @@ void mainmenuPushButtonHandler(uint8_t MAINPBPressed)
         }
         break;
 
-        case PB_SELECT:
+        case PB_BACK:
         {
+            // Make homescreen foreground application
+            mainSetForegroundApp(APP_HOMESCREEN);
 
+            // Set first item to be highlighted
+            MAINMenuIndexSelected = MENU_ITEM_1;
         }
         break;
     }

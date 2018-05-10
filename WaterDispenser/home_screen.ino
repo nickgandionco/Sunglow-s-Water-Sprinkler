@@ -45,7 +45,7 @@ void homescreenPushButtonHandler(uint8_t HOMEPBPressed)
         }
         break;
 
-        case PB_SELECT:
+        case PB_BACK:
         {
 
         }

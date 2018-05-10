@@ -15,9 +15,9 @@
 #define PB_MODE_PIN        2
 #define PB_UP_PIN          3
 #define PB_DOWN_PIN        18
-#define PB_SELECT_PIN      19
+#define PB_BACK_PIN      19
 
-#define BACKLIGHT_TIMEOUT  5000
+#define BACKLIGHT_TIMEOUT  20000
 
 #define DEBOUNCE_TIME      500 
 
@@ -44,7 +44,7 @@ typedef enum
     PB_MODE,
     PB_UP,
     PB_DOWN,
-    PB_SELECT,    
+    PB_BACK,    
 } etypePushButtons;
 
 // Push button states
@@ -92,6 +92,7 @@ typedef enum
 {
     APP_HOMESCREEN,
     APP_MAIN_MENU,
+    APP_SPRINKLE,
     APP_CUSTOM,
 } etypeApplications;
 
@@ -101,13 +102,6 @@ typedef enum
    LCD_BACKLIGHT_OFF,
    LCD_BACKLIGHT_ON
 } etypeLCDBacklightStates;
-
-// Sprinkler states
-typedef enum
-{
-   SPRINKLER_OFF,
-   SPRINKLER_ON
-} etypeSPRSprinklerStates;
 
 //***********************
 // GLOBAL VARIABLES
@@ -163,7 +157,7 @@ void setup()
     MAINForegroundApp = APP_HOMESCREEN;
 
     // Initialize sprinkler settings
-    sprinkleInit();
+    sprInit();
 }
 
 //***************************************************************
@@ -212,13 +206,13 @@ void mainInitializePBAndInterrupts()
     pinMode(PB_MODE_PIN, INPUT_PULLUP);
     pinMode(PB_UP_PIN, INPUT_PULLUP);
     pinMode(PB_DOWN_PIN, INPUT_PULLUP);
-    pinMode(PB_SELECT_PIN, INPUT_PULLUP);
+    pinMode(PB_BACK_PIN, INPUT_PULLUP);
 
     // Initialize all interrupt
     attachInterrupt(digitalPinToInterrupt(PB_MODE_PIN), mainModeDepression, FALLING);
     attachInterrupt(digitalPinToInterrupt(PB_UP_PIN), mainUpDepression, FALLING);
     attachInterrupt(digitalPinToInterrupt(PB_DOWN_PIN), mainDownDepression, FALLING);
-    attachInterrupt(digitalPinToInterrupt(PB_SELECT_PIN), mainSelectDepression, FALLING);
+    attachInterrupt(digitalPinToInterrupt(PB_BACK_PIN), mainSelectDepression, FALLING);
 }
 
 //***************************************************************
@@ -358,7 +352,7 @@ void mainSelectDepression()
     MAINPBPress = PB_PRESSED;
 
     // Indicate that SELECT button is pressed
-    MAINButtonPressed = PB_SELECT;
+    MAINButtonPressed = PB_BACK;
 }
 
 //***************************************************************
