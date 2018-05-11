@@ -3,13 +3,6 @@
 // ENUMERATIONS
 //***********************
 
-// Sprinkler states
-typedef enum
-{
-   SPRINKLER_OFF,
-   SPRINKLER_ON,
-} etypeSPRSprinklerStates;
-
 // Sprinkle menu item index
 typedef enum
 {
@@ -42,6 +35,8 @@ char SPRDuration[2];
 
 uint8_t SPRSelectedMenu = SPR_MENU_ITEM_1;
 
+uint32_t SPRTimeToSprinkle;
+
 //***************************************************************
 //
 //  Name:       sprInit
@@ -62,7 +57,7 @@ void sprInit()
     SprinkleSetting1 =
     {
         .IsActive           = SPRINKLER_ON,
-        .Hour               = 15,
+        .Hour               = 00,
         .Minute             = 00,
         .SprinkleDuration   = 5,
     };
@@ -84,6 +79,107 @@ void sprInit()
         .Minute             = 30,
         .SprinkleDuration   = 20,
     };
+}
+
+//***************************************************************
+//
+//  Name:       sprCheckSprinkle
+//
+//  Function:   Checks if it is time to turn on sprinkler
+//
+//  Inputs:     None
+//
+//  Outputs     None
+//
+//  Changelog:  05/10/2018 - NVG: Created routine
+//
+//***************************************************************
+
+uint8_t sprCheckSprinkle()
+{
+    uint8_t SPRLoopIndex;
+    stypeSprinkleTimeParamters SPRSprinklerToCheck;
+
+    // Get current hour and minute
+    uint8_t SPRCurrentHour = rtcGetRTCData(RTC_HOUR);
+    uint8_t SPRCurrentMinute = rtcGetRTCData(RTC_MINUTE);
+
+    for (SPRLoopIndex = 1; SPRLoopIndex < 4; SPRLoopIndex++)
+    {
+        if(SPRLoopIndex == 1)  SPRSprinklerToCheck = SprinkleSetting1;
+        else if(SPRLoopIndex == 2)  SPRSprinklerToCheck = SprinkleSetting2;
+        else if(SPRLoopIndex == 3)  SPRSprinklerToCheck = SprinkleSetting3;
+
+        // Check if it is time to sprinkle
+        if ((SPRCurrentHour == SPRSprinklerToCheck.Hour) &&
+            (SPRCurrentMinute == SPRSprinklerToCheck.Minute) &&
+            (SPRSprinklerToCheck.IsActive))
+        {
+            if (SPRStatus == SPRINKLER_OFF)
+            {
+                // Turn sprinkler on for set period
+                sprTurnOnSprinkler(SPRSprinklerToCheck.SprinkleDuration);
+
+                // Set flag
+                SPRStatus = SPRINKLER_ON;
+            }
+            
+        }
+    }
+
+}
+
+//***************************************************************
+//
+//  Name:       sprTurnOnSprinkler
+//
+//  Function:   Turns on sprinkler for a set period of time
+//
+//  Inputs:     SPRTime - Period to turn on sprinkler (mins)
+//
+//  Outputs     None
+//
+//  Changelog:  05/10/2018 - NVG: Created routine
+//
+//***************************************************************
+
+void sprTurnOnSprinkler(uint32_t SPRTime)
+{
+    // Set sprinkle time in minutes
+    SPRTimeToSprinkle = ((SPRTime*1000)*60);
+
+    // Reset timer
+    SPRSprinklerTimer = 0;
+
+    // Turn on sprinkler
+    digitalWrite(PIN_SPRINKLER, HIGH);
+}
+
+//***************************************************************
+//
+//  Name:       sprCheckIfSprinklerTimerExpire
+//
+//  Function:   Checks if we need to turn of sprinkler
+//
+//  Inputs:     None
+//
+//  Outputs     None
+//
+//  Changelog:  05/10/2018 - NVG: Created routine
+//
+//***************************************************************
+
+void sprCheckIfSprinklerTimerExpire()
+{
+    // Check if timer has exceeded set time
+    if (SPRTimeToSprinkle <= SPRSprinklerTimer)
+    {
+        // Turn off sprinkler
+        digitalWrite(PIN_SPRINKLER, LOW);
+
+        // Reset flag
+        SPRStatus = SPRINKLER_OFF;
+    }
 }
 
 //***************************************************************

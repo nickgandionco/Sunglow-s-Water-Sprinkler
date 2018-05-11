@@ -169,3 +169,74 @@ void rtcPrintDateAndTime()
     lcdPrintCharArray(RTCStartDateXCoordinate + 6, 0, "/");
     rtcPrintDateTimeData(RTC_YEAR, RTCStartDateXCoordinate + 7, 0);
 }
+
+//***************************************************************
+//
+//  Name:       rtcGetRTCData
+//
+//  Function:   Gets RTC Paremeter
+//
+//  Inputs:     RTCParam - parameter being asked for
+//
+//  Outputs:    Parameter being asked for
+//
+//  Changelog:  05/05/2018 - NVG: Created routine
+//
+//***************************************************************
+
+uint8_t rtcGetRTCData(uint8_t RTCParam)
+{
+    uint8_t RTCData;
+
+    // Deterermine which parameter is being asked for
+    switch (RTCParam)
+    {
+        case RTC_SECOND:
+        {
+            return RTCCurrentDateTime.second();
+        }
+        break;
+
+        case RTC_MINUTE:
+        {
+            return RTCCurrentDateTime.minute();
+        }
+        break;
+
+        case RTC_HOUR:
+        {
+            return RTCCurrentDateTime.hour();
+        }
+        break;
+
+        case RTC_DAY_OF_WEEK:
+        {
+            return RTCCurrentDateTime.dayOfTheWeek();
+        }
+        break;
+
+        case RTC_DAY:
+        {
+            return RTCCurrentDateTime.day();
+        }
+        break;
+
+        case RTC_MONTH:
+        {
+            return RTCCurrentDateTime.month();
+        }
+        break;
+
+        case RTC_YEAR:
+        {
+            // Get 16bit year data
+            uint16_t RTCYearData = RTCCurrentDateTime.year();
+
+            // Get year data after year 2000
+            RTCData = RTCYearData - 2000;
+
+            return RTCData;
+        }
+        break;
+    }
+}

@@ -12,16 +12,19 @@
 #define PIN_MEGA_SDA        20
 #define PIN_MEGA_SCL        21
 
-#define PB_MODE_PIN        2
-#define PB_UP_PIN          3
-#define PB_DOWN_PIN        18
-#define PB_BACK_PIN        19
+#define PB_MODE_PIN         2
+#define PB_UP_PIN           3
+#define PB_DOWN_PIN         18
+#define PB_BACK_PIN         19
 
-#define BACKLIGHT_TIMEOUT  20000
+#define PIN_SPRINKLER       4
+#define PIN_BUZZER          5
 
-#define DEBOUNCE_TIME      500
+#define BACKLIGHT_TIMEOUT   60000
 
-#undef DEBUG_MODE
+#define DEBOUNCE_TIME       500
+
+#define DEBUG_MODE
 
 //***********************
 // STRUCTURES
@@ -106,6 +109,13 @@ typedef enum
    LCD_BACKLIGHT_ON
 } etypeLCDBacklightStates;
 
+// Sprinkler states
+typedef enum
+{
+   SPRINKLER_OFF,
+   SPRINKLER_ON,
+} etypeSPRSprinklerStates;
+
 //***********************
 // GLOBAL VARIABLES
 //***********************
@@ -118,6 +128,7 @@ char SETTINGSItems[2][19] =
 
 elapsedMillis   TIMERBacklight;
 elapsedMillis   TIMERDebounce;
+elapsedMillis   SPRSprinklerTimer;
 
 uint8_t MAINForegroundApp;
 uint8_t MAINMenuIndexSelected       = MENU_ITEM_1;
@@ -130,6 +141,7 @@ volatile byte MAINPBPress           = PB_RELEASED;
 volatile byte MAINBacklightStatus   = LCD_BACKLIGHT_ON;
 volatile uint8_t MAINButtonPressed;
 
+bool SPRStatus = SPRINKLER_OFF;
 
 //***************************************************************
 //
@@ -165,6 +177,7 @@ void setup()
     // Initialize sprinkler settings
     sprInit();
 
+    // Print home screen
     homescreenPrintHomeScreen();
 }
 
@@ -192,6 +205,17 @@ void loop()
 
     // Wait for push button for backlight handling
     mainPBtHandlerForBacklight();
+
+    // Check and turn on if it is time to sprinkle
+    sprCheckSprinkle();
+
+    // If sprinkler is on, check if we need to turn it off
+    if (SPRStatus == SPRINKLER_ON)
+    {
+        sprCheckIfSprinklerTimerExpire();
+    }
+
+    Serial.println(digitalRead(PIN_SPRINKLER));
 }
 
 //***************************************************************
@@ -215,6 +239,12 @@ void mainInitializePBAndInterrupts()
     pinMode(PB_UP_PIN, INPUT_PULLUP);
     pinMode(PB_DOWN_PIN, INPUT_PULLUP);
     pinMode(PB_BACK_PIN, INPUT_PULLUP);
+
+    // Initialize sprinkler pin as output
+    pinMode(PIN_SPRINKLER, OUTPUT);
+
+    // Initialize buzzer pin as output
+    pinMode(PIN_BUZZER, OUTPUT);
 
     // Initialize all interrupt
     attachInterrupt(digitalPinToInterrupt(PB_MODE_PIN), mainModeDepression, FALLING);
