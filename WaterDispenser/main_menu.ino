@@ -34,12 +34,17 @@ void mainmenuPushButtonHandler(uint8_t MAINPBPressed)
         {
             // Clear LCD
             lcdClearLCD();
-            
-            // Set sprinkle app to be foreground app
-            mainSetForegroundApp(APP_SPRINKLE);
 
-            // Print Sprinkle menu
-            sprPrintMenu();
+            if (MAINMenuIndexSelected ==  MENU_SET_SPRINKLE)
+            {
+                // Set sprinkle app to be foreground app
+                mainSetForegroundApp(APP_SPRINKLE);\
+
+                // Print Sprinkle menu
+                sprPrintMenu();
+            }
+
+            
         }
         break;
 
