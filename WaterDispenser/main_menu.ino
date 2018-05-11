@@ -77,6 +77,8 @@ void mainmenuPushButtonHandler(uint8_t MAINPBPressed)
             // Make homescreen foreground application
             mainSetForegroundApp(APP_HOMESCREEN);
 
+            homescreenPrintHomeScreen();
+
             // Set first item to be highlighted
             MAINMenuIndexSelected = MENU_ITEM_1;
         }

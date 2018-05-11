@@ -158,6 +158,8 @@ void setup()
 
     // Initialize sprinkler settings
     sprInit();
+
+    homescreenPrintHomeScreen();
 }
 
 //***************************************************************

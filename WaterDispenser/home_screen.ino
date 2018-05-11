@@ -52,3 +52,28 @@ void homescreenPushButtonHandler(uint8_t HOMEPBPressed)
         break;
     }
 }
+
+//***************************************************************
+//
+//  Name:       homescreenPrintHomeScreen
+//
+//  Function:   Displays home screen
+//
+//  Inputs:     None
+//
+//  Outputs     None
+//
+//  Changelog:  05/11/2018 - NVG: Created routine
+//
+//***************************************************************
+
+void homescreenPrintHomeScreen()
+{
+    // Print total volume
+    lcdPrintCharArray(0, 1, "Total volume: ");
+
+    lcdPrintCharArray(0, 2, "Sprinkler: ");
+
+    lcdPrintCharArray(0, 3, "Hose: ");
+}
+
