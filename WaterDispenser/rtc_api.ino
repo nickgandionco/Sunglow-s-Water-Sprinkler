@@ -26,7 +26,7 @@ typedef enum
 
 RTC_DS1307      rtc;
 DateTime        RTCCurrentDateTime;
-char RTCDaysOfTheWeek[7][12] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+char RTCDaysOfTheWeek[7][12] = {"Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"};
 
 //***************************************************************
 //
@@ -148,22 +148,24 @@ void rtcPrintDateTimeData(uint8_t RTCParam, uint8_t RTCYCoordinate, uint8_t RTCX
 
 void rtcPrintDateAndTime()
 {
+    uint8_t RTCStartDateXCoordinate = 8;
+    uint8_t RTCStartTimeXCoordinate = 0;
     // Get date and time
     RTCCurrentDateTime = rtc.now();
 
     // Print current time 
-    rtcPrintDateTimeData(RTC_HOUR, 0,1);
-    lcdPrintCharArray(2, 1, ":");
-    rtcPrintDateTimeData(RTC_MINUTE, 3,1);
-    lcdPrintCharArray(5, 1, ":");
-    rtcPrintDateTimeData(RTC_SECOND, 6, 1);
+    rtcPrintDateTimeData(RTC_HOUR, RTCStartTimeXCoordinate,0);
+    lcdPrintCharArray(RTCStartTimeXCoordinate+2, 0, ":");
+    rtcPrintDateTimeData(RTC_MINUTE, RTCStartTimeXCoordinate+3,0);
+    lcdPrintCharArray(RTCStartTimeXCoordinate+5, 0, ":");
+    rtcPrintDateTimeData(RTC_SECOND, RTCStartTimeXCoordinate+6, 0);
 
     // Print current date
-    lcdPrintCharArray(0, 0, RTCDaysOfTheWeek[RTCCurrentDateTime.dayOfTheWeek()]);
-    lcdPrintCharArray(4, 0, " ");
-    rtcPrintDateTimeData(RTC_DAY, 5, 0);
-    lcdPrintCharArray(7, 0, "/");
-    rtcPrintDateTimeData(RTC_MONTH, 8, 0);
-    lcdPrintCharArray(10, 0, "/");
-    rtcPrintDateTimeData(RTC_YEAR, 11, 0);
+    lcdPrintCharArray(18, 0, RTCDaysOfTheWeek[RTCCurrentDateTime.dayOfTheWeek()]);
+    lcdPrintCharArray(RTCStartDateXCoordinate, 0, " ");
+    rtcPrintDateTimeData(RTC_DAY, RTCStartDateXCoordinate + 1, 0);
+    lcdPrintCharArray(RTCStartDateXCoordinate + 3, 0, "/");
+    rtcPrintDateTimeData(RTC_MONTH, RTCStartDateXCoordinate + 4, 0);
+    lcdPrintCharArray(RTCStartDateXCoordinate + 6, 0, "/");
+    rtcPrintDateTimeData(RTC_YEAR, RTCStartDateXCoordinate + 7, 0);
 }

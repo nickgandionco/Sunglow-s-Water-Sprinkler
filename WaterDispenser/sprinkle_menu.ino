@@ -95,8 +95,10 @@ void sprPrintMenu()
     uint8_t SPRLoopIndex;
     stypeSprinkleTimeParamters SPRSettingToDisplay;
 
+    // Clear LCD
     lcdClearLCD();
 
+    // Print all sprinkle menu
     for (SPRLoopIndex = 1; SPRLoopIndex < 4; SPRLoopIndex++)
     {
         if(SPRLoopIndex == 1)  SPRSettingToDisplay = SprinkleSetting1;

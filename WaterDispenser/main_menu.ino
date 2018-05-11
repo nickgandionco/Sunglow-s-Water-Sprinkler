@@ -32,10 +32,13 @@ void mainmenuPushButtonHandler(uint8_t MAINPBPressed)
     {
         case PB_MODE:
         {
+            // Clear LCD
             lcdClearLCD();
             
+            // Set sprinkle app to be foreground app
             mainSetForegroundApp(APP_SPRINKLE);
 
+            // Print Sprinkle menu
             sprPrintMenu();
         }
         break;
@@ -68,6 +71,9 @@ void mainmenuPushButtonHandler(uint8_t MAINPBPressed)
 
         case PB_BACK:
         {
+            // Clear LCD
+            lcdClearLCD();
+
             // Make homescreen foreground application
             mainSetForegroundApp(APP_HOMESCREEN);
 
