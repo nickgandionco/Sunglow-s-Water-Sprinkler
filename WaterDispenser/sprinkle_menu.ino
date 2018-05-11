@@ -115,15 +115,8 @@ uint8_t sprCheckSprinkle()
             (SPRCurrentMinute == SPRSprinklerToCheck.Minute) &&
             (SPRSprinklerToCheck.IsActive))
         {
-            if (SPRStatus == SPRINKLER_OFF)
-            {
-                // Turn sprinkler on for set period
-                sprTurnOnSprinkler(SPRSprinklerToCheck.SprinkleDuration);
-
-                // Set flag
-                SPRStatus = SPRINKLER_ON;
-            }
-            
+            // Turn sprinkler on for set period
+            sprTurnOnSprinkler(SPRSprinklerToCheck.SprinkleDuration);   
         }
     }
 
@@ -145,14 +138,25 @@ uint8_t sprCheckSprinkle()
 
 void sprTurnOnSprinkler(uint32_t SPRTime)
 {
-    // Set sprinkle time in minutes
-    SPRTimeToSprinkle = ((SPRTime*1000)*60);
+    if (SPRStatus == SPRINKLER_OFF)
+    {
+        // Set flag
+        SPRStatus = SPRINKLER_ON;
 
-    // Reset timer
-    SPRSprinklerTimer = 0;
+        // Set sprinkle time in minutes
+        SPRTimeToSprinkle = ((SPRTime*1000)*60);
 
-    // Turn on sprinkler
-    digitalWrite(PIN_SPRINKLER, HIGH);
+        // Reset timer
+        SPRSprinklerTimer = 0;
+
+        // Turn on sprinkler
+        digitalWrite(PIN_SPRINKLER, HIGH);
+
+#ifdef DEBUG_MODE
+        Serial.println(SPRTimeToSprinkle);
+#endif
+
+    }
 }
 
 //***************************************************************
@@ -171,6 +175,11 @@ void sprTurnOnSprinkler(uint32_t SPRTime)
 
 void sprCheckIfSprinklerTimerExpire()
 {
+
+#ifdef DEBUG_MODE
+    Serial.println(SPRSprinklerTimer);
+#endif
+
     // Check if timer has exceeded set time
     if (SPRTimeToSprinkle <= SPRSprinklerTimer)
     {

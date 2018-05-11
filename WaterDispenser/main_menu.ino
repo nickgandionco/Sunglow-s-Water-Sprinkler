@@ -32,19 +32,22 @@ void mainmenuPushButtonHandler(uint8_t MAINPBPressed)
     {
         case PB_MODE:
         {
-            // Clear LCD
-            lcdClearLCD();
-
             if (MAINMenuIndexSelected ==  MENU_SET_SPRINKLE)
             {
+                // Clear LCD
+                lcdClearLCD();
+
                 // Set sprinkle app to be foreground app
                 mainSetForegroundApp(APP_SPRINKLE);
 
                 // Print Sprinkle menu
                 sprPrintMenu(MENU_ITEM_1);
             }
-
-            
+            else if (MAINMenuIndexSelected == MENU_MANUAL_MODE)
+            {
+                // Turn sprinkler on for 1 minute
+                sprTurnOnSprinkler(1);
+            }
         }
         break;
 
