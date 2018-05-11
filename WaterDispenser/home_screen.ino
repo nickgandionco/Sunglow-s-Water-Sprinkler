@@ -70,7 +70,7 @@ void homescreenPushButtonHandler(uint8_t HOMEPBPressed)
 void homescreenPrintHomeScreen()
 {
     // Print total volume
-    lcdPrintCharArray(0, 1, "Total volume: ");
+    lcdPrintCharArray(0, 1, "Total: ");
 
     lcdPrintCharArray(0, 2, "Sprinkler: ");
 

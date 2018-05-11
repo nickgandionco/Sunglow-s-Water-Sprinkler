@@ -38,10 +38,10 @@ void mainmenuPushButtonHandler(uint8_t MAINPBPressed)
             if (MAINMenuIndexSelected ==  MENU_SET_SPRINKLE)
             {
                 // Set sprinkle app to be foreground app
-                mainSetForegroundApp(APP_SPRINKLE);\
+                mainSetForegroundApp(APP_SPRINKLE);
 
                 // Print Sprinkle menu
-                sprPrintMenu();
+                sprPrintMenu(MENU_ITEM_1);
             }
 
             

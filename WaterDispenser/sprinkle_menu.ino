@@ -10,6 +10,14 @@ typedef enum
    SPRINKLER_ON,
 } etypeSPRSprinklerStates;
 
+// Sprinkle menu item index
+typedef enum
+{
+    SPR_MENU_ITEM_1 = 1,
+    SPR_MENU_ITEM_2 = 2,
+    SPR_MENU_ITEM_3 = 3,
+} etypeSprinkleMenuItemIndex;
+
 //***********************
 // GLOBAL VARIABLES
 //***********************
@@ -31,6 +39,8 @@ char SPRIdentifiers[4][2] =
 char SPRHour[2];
 char SPRMinute[2];
 char SPRDuration[2];
+
+uint8_t SPRSelectedMenu = SPR_MENU_ITEM_1;
 
 //***************************************************************
 //
@@ -82,7 +92,7 @@ void sprInit()
 //
 //  Function:   Prints sprinkle menu
 //
-//  Inputs:     None
+//  Inputs:     SPRItemToSelect - Item selected
 //
 //  Outputs     None
 //
@@ -90,13 +100,19 @@ void sprInit()
 //
 //***************************************************************
 
-void sprPrintMenu()
+void sprPrintMenu(uint8_t SPRItemToSelect)
 {
     uint8_t SPRLoopIndex;
     stypeSprinkleTimeParamters SPRSettingToDisplay;
 
     // Clear LCD
     lcdClearLCD();
+
+    // Print header
+    lcdPrintCharArray(3, 0, "SPRINKLE TIMES");
+
+    // Print indicator
+    lcdPrintCharArray(0, SPRItemToSelect+1, "*");
 
     // Print all sprinkle menu
     for (SPRLoopIndex = 1; SPRLoopIndex < 4; SPRLoopIndex++)
@@ -127,6 +143,12 @@ void sprPrintMenu()
 
         lcdPrintCharArray(15, SPRLoopIndex, "Mins");
 
+        // Clear stray characters (TODO: Trace stray characters)
+        lcdPrintCharArray(6, SPRLoopIndex, " ");
+        lcdPrintCharArray(12, SPRLoopIndex, " ");
+        lcdPrintCharArray(19, SPRLoopIndex, " ");
+
+        lcdPrintCharArray(0, 3, " ");
     }
 }
 
@@ -156,20 +178,86 @@ void sprMenuBHandler(uint8_t SPRPBPressed)
 
         case PB_UP:
         {
-
+            // Move highlited item up
+            if (SPRSelectedMenu != SPR_MENU_ITEM_1)
+            {
+                // Decrement selected index
+                SPRSelectedMenu--;
+                
+                // Highlight item
+                sprHighlightItemOnMenu(SPRSelectedMenu, MENU_UP);
+            }
         }
         break;
 
         case PB_DOWN:
         {
+            
 
+            // Move highlited item down
+            if (SPRSelectedMenu != SPR_MENU_ITEM_3)
+            {
+                // Increment selected index
+                SPRSelectedMenu++;
+
+                // Highlight item
+                sprHighlightItemOnMenu(SPRSelectedMenu, MENU_DOWN);
+            }
         }
         break;
 
         case PB_BACK:
         {
+            // Set foreground app to main menu
+            mainSetForegroundApp(APP_MAIN_MENU);
 
+            // Clear LCD
+            lcdClearLCD();
+
+            // Set index to select
+            mainmenuHighlightItemOnMainMenu(MENU_ITEM_1, MENU_NONE);
+
+            // Print main menu
+            mainmenuPrintMainMenu(MENU_SET_SPRINKLE);
         }
         break;
     }
+}
+
+//***************************************************************
+//
+//  Name:       sprHighlightItemOnMenu
+//
+//  Function:   Highlights an item on the sprinkle menu
+//
+//  Inputs:     SPRSelectedItem - Item to be highlighted
+//              SPRDirection    - Direction of selection
+//
+//  Outputs     None
+//
+//  Changelog:  05/10/2018 - NVG: Created routine
+//
+//***************************************************************
+
+void sprHighlightItemOnMenu(uint8_t SPRSelectedItem, uint8_t SPRDirection)
+{
+    uint8_t SPRCurrentSelection = SPRSelectedItem;
+    uint8_t SPRPreviousSelection;
+
+    if (SPRDirection != MENU_NONE)
+    {
+        // Find out previous selection so we can erase indicator
+        if (SPRDirection == MENU_DOWN)
+        {
+            SPRPreviousSelection = (--SPRSelectedItem);
+        }
+        else if (SPRDirection == MENU_UP)
+        {
+            SPRPreviousSelection = (++SPRSelectedItem);
+        }
+
+        lcdPrintCharArray(0, SPRPreviousSelection, " ");
+    }
+
+    lcdPrintCharArray(0, SPRCurrentSelection, "*");
 }

@@ -15,11 +15,13 @@
 #define PB_MODE_PIN        2
 #define PB_UP_PIN          3
 #define PB_DOWN_PIN        18
-#define PB_BACK_PIN      19
+#define PB_BACK_PIN        19
 
 #define BACKLIGHT_TIMEOUT  20000
 
-#define DEBOUNCE_TIME      500 
+#define DEBOUNCE_TIME      500
+
+#undef DEBUG_MODE
 
 //***********************
 // STRUCTURES
@@ -73,6 +75,7 @@ typedef enum
     MENU_ITEM_4,
 } etypeMainMenuItemIndex;
 
+// Menu directions
 typedef enum
 {
     MENU_NONE,
@@ -144,6 +147,9 @@ volatile uint8_t MAINButtonPressed;
 
 void setup()
 {
+#ifdef DEBUG_MODE
+    Serial.begin(9600);
+#endif
     // Initialize LCD
     lcdInit();
 
@@ -384,6 +390,12 @@ void mainPushButtonHandler()
         case APP_MAIN_MENU:
         {
             mainmenuPushButtonHandler(MAINButtonPressed);
+        }
+        break;
+
+        case APP_SPRINKLE:
+        {
+            sprMenuBHandler(MAINButtonPressed);
         }
         break;
     }
