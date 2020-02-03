@@ -3,7 +3,7 @@
 //***********************
 
 #include <Wire.h>
-#include "C:\Program Files (x86)\Arduino\libraries\LiquidCrystal_I2C\LCD.h"
+#include <LCD.h>
 #include <LiquidCrystal_I2C.h>
 
 //***********************
