@@ -139,7 +139,7 @@ void mainmenuPrintMainMenu(uint8_t MAINMENUTopMenu)
 //
 //***************************************************************
 
-void mainmenuHighlightItemOnMainMenu(uint8_t MAINMENUSelectedItem, uint8_t MAINMENUMenuDirection)
+void mainmenuHighlightItemOnMainMenu(uint8_t MAINMENUSelectedItem, etypeMenuSelectionDirection MAINMENUMenuDirection)
 {
     uint8_t MAINMENUCurrentSelection = MAINMENUSelectedItem;
     uint8_t MAINMENUPreviousSelection;
