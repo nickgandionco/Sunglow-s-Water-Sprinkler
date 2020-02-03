@@ -13,7 +13,7 @@
 //
 //***************************************************************
 
-void homescreenPushButtonHandler(uint8_t HOMEPBPressed)
+void homescreenPushButtonHandler(etypePushButtons HOMEPBPressed)
 {
     switch (HOMEPBPressed)
     {
@@ -76,4 +76,3 @@ void homescreenPrintHomeScreen()
 
     lcdPrintCharArray(0, 3, "Hose: ");
 }
-

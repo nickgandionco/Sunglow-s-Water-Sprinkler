@@ -26,7 +26,7 @@ char MENUItems[5][19] =
 //
 //***************************************************************
 
-void mainmenuPushButtonHandler(uint8_t MAINPBPressed)
+void mainmenuPushButtonHandler(etypePushButtons MAINPBPressed)
 {
     switch (MAINPBPressed)
     {

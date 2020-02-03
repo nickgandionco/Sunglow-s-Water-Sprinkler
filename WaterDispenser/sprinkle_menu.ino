@@ -271,7 +271,7 @@ void sprPrintMenu(uint8_t SPRItemToSelect)
 //
 //***************************************************************
 
-void sprMenuBHandler(uint8_t SPRPBPressed)
+void sprMenuBHandler(etypePushButtons SPRPBPressed)
 {
     switch (SPRPBPressed)
     {
