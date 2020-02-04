@@ -324,6 +324,9 @@ void sprMenuBHandler(etypePushButtons SPRPBPressed)
 
             // Print main menu
             mainmenuPrintMainMenu(MENU_SET_SPRINKLE);
+
+            // Reset selected item
+            SPRSelectedMenu = SPR_MENU_ITEM_1;
         }
         break;
     }
