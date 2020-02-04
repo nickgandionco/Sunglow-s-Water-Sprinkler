@@ -282,9 +282,6 @@ void mainPBtHandlerForBacklight()
     // If there is a push button depression
     if ((PB_PRESSED == MAINPBPress) && (DEBOUNCE_TIME <= TIMERDebounce))
     {
-        // Reset push button depression tracker
-        MAINPBPress = PB_RELEASED;
-
         // Set flag to indicate that backlight should be OFF
         MAINBacklightStatus = LCD_BACKLIGHT_ON;
 
@@ -293,6 +290,9 @@ void mainPBtHandlerForBacklight()
 
         // Reset debounce timer
         TIMERDebounce = 0;
+
+        // Reset push button depression tracker
+        MAINPBPress = PB_RELEASED;
 
         mainPushButtonHandler();
     }
@@ -317,11 +317,14 @@ void mainPBtHandlerForBacklight()
 
 void mainModeDepression()
 {
-    // Indicate that there is a button depression
-    MAINPBPress = PB_PRESSED;
+    if (DEBOUNCE_TIME <= TIMERDebounce)
+    {
+        // Indicate that there is a button depression
+        MAINPBPress = PB_PRESSED;
 
-    // Indicate that MODE button is pressed
-    MAINButtonPressed = PB_MODE;
+        // Indicate that MODE button is pressed
+        MAINButtonPressed = PB_MODE;
+    }
 }
 
 //***************************************************************
@@ -340,11 +343,14 @@ void mainModeDepression()
 
 void mainUpDepression()
 {
-    // Indicate that there is a button depression
-    MAINPBPress = PB_PRESSED;
+    if (DEBOUNCE_TIME <= TIMERDebounce)
+    {
+        // Indicate that there is a button depression
+        MAINPBPress = PB_PRESSED;
 
-    // Indicate that UP button is pressed
-    MAINButtonPressed = PB_UP;
+        // Indicate that UP button is pressed
+        MAINButtonPressed = PB_UP;
+    }
 }
 
 //***************************************************************
@@ -363,11 +369,14 @@ void mainUpDepression()
 
 void mainDownDepression()
 {
-    // Indicate that there is a button depression
-    MAINPBPress = PB_PRESSED;
+    if (DEBOUNCE_TIME <= TIMERDebounce)
+    {
+        // Indicate that there is a button depression
+        MAINPBPress = PB_PRESSED;
 
-    // Indicate that DOWN button is pressed
-    MAINButtonPressed = PB_DOWN;
+        // Indicate that DOWN button is pressed
+        MAINButtonPressed = PB_DOWN;
+    }
 }
 
 //***************************************************************
@@ -386,11 +395,14 @@ void mainDownDepression()
 
 void mainSelectDepression()
 {
-    // Indicate that there is a button depression
-    MAINPBPress = PB_PRESSED;
+    if (DEBOUNCE_TIME <= TIMERDebounce)
+    {
+        // Indicate that there is a button depression
+        MAINPBPress = PB_PRESSED;
 
-    // Indicate that SELECT button is pressed
-    MAINButtonPressed = PB_BACK;
+        // Indicate that SELECT button is pressed
+        MAINButtonPressed = PB_BACK;
+    }
 }
 
 //***************************************************************
