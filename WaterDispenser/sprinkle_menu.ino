@@ -191,6 +191,8 @@ void sprPrintMenu(uint8_t SPRItemToSelect)
     uint8_t SPRLoopIndex;
     stypeSprinkleTimeParamters SPRSettingToDisplay;
 
+    SPRItemToSelect = SPRSelectedMenu;
+
     // Clear LCD
     lcdClearLCD();
 
@@ -198,7 +200,7 @@ void sprPrintMenu(uint8_t SPRItemToSelect)
     lcdPrintCharArray(3, 0, "SPRINKLE TIMES");
 
     // Print indicator
-    lcdPrintCharArray(0, SPRItemToSelect+1, "*");
+    lcdPrintCharArray(0, SPRItemToSelect, "*");
 
     // Print all sprinkle menu
     for (SPRLoopIndex = 1; SPRLoopIndex < 4; SPRLoopIndex++)
@@ -233,8 +235,6 @@ void sprPrintMenu(uint8_t SPRItemToSelect)
         lcdPrintCharArray(6, SPRLoopIndex, " ");
         lcdPrintCharArray(12, SPRLoopIndex, " ");
         lcdPrintCharArray(19, SPRLoopIndex, " ");
-
-        lcdPrintCharArray(0, 3, " ");
     }
 }
 
@@ -289,8 +289,6 @@ void sprMenuBHandler(etypePushButtons SPRPBPressed)
 
         case PB_DOWN:
         {
-            
-
             // Move highlited item down
             if (SPRSelectedMenu != SPR_MENU_ITEM_3)
             {
