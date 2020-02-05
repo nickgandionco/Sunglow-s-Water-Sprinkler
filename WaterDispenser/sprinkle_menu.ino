@@ -1,25 +1,6 @@
-
-//***********************
-// ENUMERATIONS
-//***********************
-
-// Sprinkle menu item index
-typedef enum
-{
-    SPR_MENU_ITEM_1 = 1,
-    SPR_MENU_ITEM_2 = 2,
-    SPR_MENU_ITEM_3 = 3,
-} etypeSprinkleMenuItemIndex;
-
 //***********************
 // GLOBAL VARIABLES
 //***********************
-
-char SPROnOff[2][20] =
-{
-    "OFF",
-    "ON ",
-};
 
 char SPRIdentifiers[4][2] =
 {
@@ -230,7 +211,7 @@ void sprPrintMenu(uint8_t SPRItemToSelect)
         lcdPrintCharArray(1, SPRLoopIndex, SPRIdentifiers[SPRLoopIndex]);
 
         // Print on/off status
-        lcdPrintCharArray(3, SPRLoopIndex, SPROnOff[SPRSettingToDisplay.IsActive]);
+        lcdPrintCharArray(3, SPRLoopIndex, SETTINGSOnOff[SPRSettingToDisplay.IsActive]);
 
         // Print hour with no zero suppression
         sprintf(SPRHour, "%02d", SPRSettingToDisplay.Hour);
@@ -277,7 +258,18 @@ void sprMenuBHandler(etypePushButtons SPRPBPressed)
     {
         case PB_MODE:
         {
+            // Set foreground app tp be sprinkler setting
+            mainSetForegroundApp(APP_SET);
 
+            // Clear LCD
+            lcdClearLCD();
+
+            setSprinklerToSet(SPRSelectedMenu);
+
+            // Print sprinkle setting menu
+            setPrintMenu(SPRINKLER_ACTIVE);
+
+            setDisplayParameter(SPRINKLER_ACTIVE);
         }
         break;
 

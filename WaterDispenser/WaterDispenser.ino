@@ -99,6 +99,7 @@ typedef enum
     APP_HOMESCREEN,
     APP_MAIN_MENU,
     APP_SPRINKLE,
+    APP_SET,
     APP_CUSTOM,
 } etypeApplications;
 
@@ -116,6 +117,23 @@ typedef enum
    SPRINKLER_ON,
 } etypeSPRSprinklerStates;
 
+// Sprinkle menu item index
+typedef enum
+{
+    SPR_MENU_ITEM_1 = 1,
+    SPR_MENU_ITEM_2 = 2,
+    SPR_MENU_ITEM_3 = 3,
+} etypeSprinkleMenuItemIndex;
+
+// Sprinkler settings
+typedef enum
+{
+   SPRINKLER_ACTIVE,
+   SPRINKLER_HOUR,
+   SPRINKLER_MINUTE,
+   SPRINKLER_DURATION,
+} etypeSETSprinklerParams;
+
 //***********************
 // GLOBAL VARIABLES
 //***********************
@@ -124,6 +142,12 @@ char SETTINGSItems[2][19] =
 {
     "Buzzer",
     "Backlight",
+};
+
+char SETTINGSOnOff[2][20] =
+{
+    "OFF",
+    "ON ",
 };
 
 elapsedMillis   TIMERBacklight;
@@ -438,6 +462,12 @@ void mainPushButtonHandler()
         case APP_SPRINKLE:
         {
             sprMenuBHandler(MAINButtonPressed);
+        }
+        break;
+
+        case APP_SET:
+        {
+            setMenuBHandler(MAINButtonPressed);
         }
         break;
     }
